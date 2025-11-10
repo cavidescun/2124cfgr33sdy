@@ -3,26 +3,24 @@ import tempfile
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from app.Core.application.use_cases import CrearLLaveMaestra
-from app.Core.infrastructure.repositories import RegistroCalificadoRepositoryImpl
 from .documentation.swagger_docs import crear_acta_swagger
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 from django.http import FileResponse, Http404
 import os
+from rest_framework.permissions import AllowAny
+from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.tokens import RefreshToken
+from .serializers import EmailTokenSerializer, RegistroCalificadoEntitySerializer
+from app.shared.container import container
+
 
 class GenerarLLaveMaestraView(APIView):
-    @crear_acta_swagger
-    def post(self, request):
-        repo = RegistroCalificadoRepositoryImpl()
-        use_case = CrearLLaveMaestra(repo)
-        programa = use_case.ejecutar()
-
-        return Response(
-            {"llave_id": programa.llave_documento},
-            status=status.HTTP_202_ACCEPTED,
-        )
+    def get(self, request, *args, **kwargs):
+        use_case = container.core().obtener_llave()
+        registros = use_case.ejecutar()
+        serializer = RegistroCalificadoEntitySerializer(registros, many=True)
+        return Response(serializer.data)
+        
+    
 
 
 class DescargarCarpetaView(APIView):
@@ -46,3 +44,20 @@ class DescargarCarpetaView(APIView):
         response = FileResponse(open(zip_path, "rb"), as_attachment=True)
         response["Content-Disposition"] = f'attachment; filename="{zip_filename}"'
         return response
+
+
+class EmailTokenView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = EmailTokenSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        email = serializer.validated_data['email']
+        User = get_user_model()
+        user = User.objects.get(email=email)
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }, status=status.HTTP_200_OK)

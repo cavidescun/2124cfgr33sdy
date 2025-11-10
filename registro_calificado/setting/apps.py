@@ -8,9 +8,10 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    "rest_framework",
     "drf_yasg",
     "django_json_widget",
+    'rest_framework',
+    'rest_framework_simplejwt',
 ]
 
 LOCAL_APPS = [
@@ -27,6 +28,7 @@ LOCAL_APPS = [
     "app.DocumentoMaestroPrograma",
     "app.InvestigacionesInnovacion",
     "app.Acta",
+    "app.Biblioteca",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

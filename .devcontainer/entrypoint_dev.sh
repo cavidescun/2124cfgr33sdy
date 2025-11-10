@@ -5,7 +5,7 @@ echo "=== 🚀 Iniciando entorno local de desarrollo ==="
 
 echo "⌛ Esperando a que las bases de datos estén listas..."
 
-# Esperar a PostgreSQL
+
 echo "📊 Verificando PostgreSQL..."
 until python -c "import psycopg2; psycopg2.connect(host='${POSTGRES_HOST}', user='${POSTGRES_USER}', password='${POSTGRES_PASSWORD}', dbname='${POSTGRES_DB}')" &> /dev/null; do
   echo "⏳ PostgreSQL no está listo - esperando..."
@@ -13,11 +13,8 @@ until python -c "import psycopg2; psycopg2.connect(host='${POSTGRES_HOST}', user
 done
 echo "✅ PostgreSQL está listo"
 
-# Esperar a SQL Server (conectando como SA, que SIEMPRE existe)
 echo "📊 Verificando SQL Server..."
 
-
-# AHORA sí, inicializar la base de datos (siempre con SA)
 echo "🔧 Inicializando base de datos SQL Server..."
 python << 'PYEND'
 import pyodbc

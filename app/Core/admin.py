@@ -1,11 +1,33 @@
-# app/admin.py
 from django.contrib import admin
+from django.contrib.auth.models import User
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.html import format_html
+from django.utils.translation import gettext_lazy as _
 
 from app.Core.infrastructure.models import RegistroCalificado
-
 from .models import PlantillaDocumento
 
+admin.site.unregister(User)
+
+@admin.register(User)
+class CustomUserAdmin(BaseUserAdmin):
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'email', 'password1', 'password2'),
+        }),
+    )
+
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        (_('Información personal'), {'fields': ('first_name', 'last_name', 'email')}),
+        (_('Permisos'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        (_('Fechas importantes'), {'fields': ('last_login', 'date_joined')}),
+    )
+
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
+    search_fields = ('username', 'email', 'first_name', 'last_name')
+    ordering = ('username',)
 
 @admin.register(PlantillaDocumento)
 class PlantillaDocumentoAdmin(admin.ModelAdmin):

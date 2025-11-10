@@ -19,11 +19,11 @@ staticfiles/
 *.pot
 *.mo
 
-
 # ---- Migraciones de Django ----
 # ✅ NO ignorar las migraciones (deben versionarse)
 !**/migrations/__init__.py
-
+!.devcontainer/**
+!scripts/**
 # ---- IDE / Editor ----
 .vscode/
 .idea/
@@ -34,6 +34,7 @@ staticfiles/
 *.seed
 *.tar
 docker-compose.override.yml
+docker-compose.yml
 
 # ---- Coverage / Testing ----
 .coverage
@@ -44,6 +45,11 @@ htmlcov/
 .pyre/
 .pytype/
 .cache/
+
+# ---- Scripts Shell ----
+*.sh
+
+
 
 # ---- Otros ----
 *.bak

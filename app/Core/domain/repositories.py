@@ -13,3 +13,11 @@ class RegistroCalificadoRepository(ABC):
     @abstractmethod
     def find_by_id(self, id: int) -> RegistroCalificadoEntity:
         pass
+
+    @abstractmethod
+    def all(self) -> RegistroCalificadoEntity:
+        pass
+
+    @abstractmethod
+    def exists_by_llave(self, id: int) -> bool:
+        pass

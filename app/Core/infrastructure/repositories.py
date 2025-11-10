@@ -28,3 +28,25 @@ class RegistroCalificadoRepositoryImpl(RegistroCalificadoRepository):
                 if field.name != "id"
             }
         )
+    def exists_by_llave(self, llave: str) -> bool:
+        return RegistroCalificado.objects.filter(llave_documento=llave).exists()
+    
+      
+    def all(self):
+
+        registros = RegistroCalificado.objects.all().order_by("-creado_en")[:10]
+        resultado = []
+        for model in registros:
+            data = {
+                field.name: getattr(model, field.name)
+                for field in sorted(model._meta.fields, key=lambda f: f.name)
+                if field.name != "id"
+            }
+            entity = RegistroCalificadoEntity(
+                id=model.id,
+                **data
+            )
+            resultado.append(entity)
+
+        return resultado
+
