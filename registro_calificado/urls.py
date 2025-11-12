@@ -80,6 +80,10 @@ urlpatterns = [
         include("app.Biblioteca.infrastructure.urls"),
     ),
     path(
+        "api/ai-analyzer/",
+        include("app.IAEtiquetas.infrastructure.urls"),
+    ),
+    path(
         "swagger/",
         schema_view.with_ui("swagger", cache_timeout=0),
         name="schema-swagger-ui",

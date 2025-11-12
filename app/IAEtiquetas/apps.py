@@ -1,0 +1,7 @@
+from django.apps import AppConfig
+
+
+class AianalyzerConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'app.IAEtiquetas'
+    verbose_name = 'Analizador IA'
