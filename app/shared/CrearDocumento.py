@@ -1,8 +1,6 @@
 import logging
 import os
 import threading
-
-
 from app.shared.logic.generadoreporte import GeneradorReporte
 from app.shared.logic.contextoreporte import ContextoReporte
 
@@ -31,8 +29,6 @@ class CrearDocumento:
         for imagen in contexto.imagenes:
             if not os.path.exists(imagen.path):
                 logger.warning(f"La imagen {imagen.path} no existe.")
-
-        # Si hay llave maestra, construir la ruta completa
         if llave_maestra:
             ruta_completa = os.path.join(llave_maestra, nombre_salida)
         else:
@@ -50,7 +46,6 @@ class CrearDocumento:
         contexto: ContextoReporte,
         plantillas: list[str],
         llave_maestra: str = None,
-        numero: int = None,
     ):
         """
         Tarea que genera múltiples documentos de forma secuencial.
@@ -59,14 +54,11 @@ class CrearDocumento:
             contexto: Contexto con datos del reporte
             plantillas: Lista de rutas de plantillas
             llave_maestra: Carpeta principal donde se guardarán los documentos
-            numero: Número que se usará como nombre del archivo
         """
         for plantilla in plantillas:
-            # Si se proporciona número, usarlo como nombre, sino usar el nombre de la plantilla
-            if numero is not None:
-                nombre_salida = f"{numero}.docx"
-            else:
-                nombre_salida = f"reporte_{os.path.basename(plantilla)}"
+            # Genera el nombre basado en el nombre de la plantilla
+            nombre_base = os.path.splitext(os.path.basename(plantilla))[0]
+            nombre_salida = f"{nombre_base}.docx"
 
             try:
                 logger.info(f"Iniciando generación desde plantilla: {plantilla}")
@@ -82,7 +74,6 @@ class CrearDocumento:
         contexto: ContextoReporte,
         plantillas: list[str],
         llave_maestra: str = None,
-        numero: int = None,
     ) -> None:
         """
         Lanza la generación de múltiples documentos en segundo plano usando hilos.
@@ -91,11 +82,10 @@ class CrearDocumento:
             contexto: Contexto con datos del reporte
             plantillas: Lista de rutas de plantillas
             llave_maestra: Carpeta principal donde se guardarán los documentos (ej: "LLAVE-F5557BF5")
-            numero: Número que se usará como nombre del archivo (ej: 1 -> "1.docx")
         """
         hilo = threading.Thread(
             target=self.tarea,
-            args=(contexto, plantillas, llave_maestra, numero),
+            args=(contexto, plantillas, llave_maestra),
             daemon=True,
         )
         hilo.start()

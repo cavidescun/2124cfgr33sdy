@@ -17,18 +17,13 @@ class CrearBiblioteca:
         Si el usuario no envía una llave_maestra, se genera automáticamente
         y se crea un nuevo RegistroCalificado asociado.
         """
-        llave_maestra = f"LLAVE-{uuid.uuid4().hex[:8].upper()}"
-        registro = RegistroCalificadoEntity(
-                id=None,
-                llave_documento=llave_maestra,
-                tipo=data.get("tipo", "Posgrado"),
-                snies=data.get("snies", None),
-            )
-        self.registro_repo.save(registro)
-        etiquetas = FormularioRecursosMapper.to_etiquetas(data)
+      
+        creado_por = data.pop("creado_por", None)  
+        llave_maestra = data.pop("llave_maestra", None)  
         biblioteca = BibliotecaEntity(
                 id=None,
                 llave_maestra=llave_maestra,
-                etiquetas_dinamicas=etiquetas,
+                etiquetas_dinamicas=data,
+                creado_por_id=creado_por.id if creado_por else None,  
             )
         return self.biblioteca_repo.save(biblioteca)

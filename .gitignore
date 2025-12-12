@@ -7,10 +7,11 @@ __pycache__/
 *.log
 
 # ---- Entorno virtual ----
+.env
 .venv
 venv/
 .env.*
-.env
+.devcontainer/.env
 
 # ---- Archivos de Django ----
 *.sqlite3

@@ -13,16 +13,14 @@ class BibliotecaRepositoryImpl(BibliotecaRepository):
         Guarda una Acta en la base de datos.
         Convierte llave_maestra (string) en instancia del modelo RegistroCalificado.
         """
-        # 1️⃣ Obtener la instancia del modelo Django para la llave_maestra
+
         registro_model = RegistroCalificado.objects.get(llave_documento=biblioteca_entity.llave_maestra)
 
-        # 2️⃣ Crear Acta usando la instancia del modelo
         acta_model = Biblioteca.objects.create(
             llave_maestra=registro_model,
             etiquetas_dinamicas=biblioteca_entity.etiquetas_dinamicas
         )
 
-        # 3️⃣ Devolver ActaEntity con datos persistidos
         return BibliotecaEntity(
             id=acta_model.id,
             llave_maestra=acta_model.llave_maestra.llave_documento,
@@ -37,7 +35,21 @@ class BibliotecaRepositoryImpl(BibliotecaRepository):
         try:
             model = Biblioteca.objects.get(pk=id)
         except ObjectDoesNotExist:
-            raise ValueError(f"No existe un acta con id {id}")
+            raise ValueError(f"No existe una biblioteca con id {id}")
+        return BibliotecaEntity(
+            id=model.id,
+            llave_maestra=model.llave_maestra,
+            etiquetas_dinamicas=model.etiquetas_dinamicas,
+            creado_en=model.creado_en,
+            actualizado_en=model.actualizado_en,
+        )
+
+    def find_by_llave(self, llave_id: str) -> BibliotecaEntity:
+        """Recupera una entidad Acta desde la base de datos usando la llave maestra."""
+        try:
+            model = Biblioteca.objects.get(llave_maestra_id=llave_id)
+        except Biblioteca.DoesNotExist:
+           raise NotFound(f"No existe un biblioteca con llave {llave_id}")
         return BibliotecaEntity(
             id=model.id,
             llave_maestra=model.llave_maestra,

@@ -3,7 +3,6 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "web-dev",
   "workspaceFolder": "/app",
-
   "customizations": {
     "vscode": {
       "extensions": [
@@ -22,11 +21,11 @@
       }
     }
   },
-
-  "forwardPorts": [8000],
+  "forwardPorts": [
+    8000
+  ],
   "postCreateCommand": "",
   "remoteUser": "root",
-
   // Montar credenciales de Git
   "mounts": [
     "source=${localEnv:USERPROFILE}${localEnv:HOME}/.gitconfig,target=/root/.gitconfig,type=bind,consistency=cached",

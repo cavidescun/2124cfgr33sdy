@@ -1,14 +1,12 @@
 from django.urls import path
 
-from .views import GenerarLLaveMaestraView, DescargarCarpetaView,EmailTokenView
+from .views import EmailTokenView,UnificacionInformacionView,GenerarInformeView,DescargarInformeView
 
 urlpatterns = [
-    path(
-        "GenerarLLaveMaestraView/",
-        GenerarLLaveMaestraView.as_view(),
-        name="Generar LLave Maestra",
-    ),
- path("descargar/<str:llave>/", DescargarCarpetaView.as_view(), name="descargar_carpeta"),
- path('token/email/', EmailTokenView.as_view(), name='token_by_email'),
+
+   path("unificar-informacion",UnificacionInformacionView.as_view(),name="unifica informacion"),
+   path('token/email/', EmailTokenView.as_view(), name='token_by_email'),
+   path('generar-informe', GenerarInformeView.as_view(), name='token_by_email'),
+   path('descargar-informe', DescargarInformeView.as_view(), name='descargar-informe'),
 
 ]

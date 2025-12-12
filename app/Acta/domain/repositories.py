@@ -13,3 +13,19 @@ class ActaRepository(ABC):
     @abstractmethod
     def find_by_id(self, id: int) -> ActaEntity:
         pass
+
+    @abstractmethod
+    def find_by_llave(self, llave_id: str) -> ActaEntity:
+        pass
+
+    
+    @abstractmethod
+    def find_by_llave(self, llave_id: str) -> ActaEntity:
+        pass
+
+    @abstractmethod
+    def update(self, acta: ActaEntity) -> ActaEntity:
+        """Actualiza una acta existente"""
+        pass
+
+

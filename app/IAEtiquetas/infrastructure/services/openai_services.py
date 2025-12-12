@@ -1,16 +1,19 @@
 import os
 import json
-from typing import Dict, Any
-from openai import OpenAI
+import httpx
+from typing import Dict, Any, Optional
 from app.IAEtiquetas.domain.services import IAService
 
 class OpenAIService(IAService):
     def __init__(self):
-        api_key = os.getenv("OPENAI_API_KEY", "")
+        api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
-            raise ValueError("Variable para OPENAI no esta configurada")
+            raise ValueError("La clave de API de OpenAI no está configurada en las variables de entorno.")
+
+        from openai import OpenAI
+
         self.client = OpenAI(api_key=api_key)
-    
+       
     def analizar(self, prompt: str, datos: Dict[str, Any]) -> str:
         try:
             prompt_formateado = self._formatear_prompt(prompt, datos)
@@ -32,7 +35,9 @@ class OpenAIService(IAService):
 
             return response.choices[0].message.content
         except Exception as e:
-            raise RuntimeError(f"Error al analizar los datos con OpenAI: {str(e)}")
+            import traceback
+            error_detail = traceback.format_exc()
+            raise RuntimeError(f"Error al analizar los datos con OpenAI: {str(e)}\nDetalles: {error_detail}")
 
     def _formatear_prompt(self, prompt: str, datos: Dict[str, Any]) -> str:
         datos_str = json.dumps(datos, indent=2, ensure_ascii=False)

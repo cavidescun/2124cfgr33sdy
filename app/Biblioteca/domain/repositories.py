@@ -13,3 +13,8 @@ class BibliotecaRepository(ABC):
     @abstractmethod
     def find_by_id(self, id: int) -> BibliotecaEntity:
         pass
+
+    @abstractmethod
+    def find_by_llave(self, id: int) -> BibliotecaEntity:
+        pass
+

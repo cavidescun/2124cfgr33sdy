@@ -11,3 +11,4 @@ class BibliotecaEntity:
     etiquetas_dinamicas: Optional[Dict[str, Any]] = None
     creado_en: Optional[datetime] = None
     actualizado_en: Optional[datetime] = None
+    creado_por_id: Optional[int] = None  

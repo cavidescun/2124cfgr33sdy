@@ -1,6 +1,6 @@
 from app.Core.domain.entities import RegistroCalificadoEntity
 from app.Core.domain.repositories import RegistroCalificadoRepository
-
+from rest_framework.exceptions import NotFound
 from .models import RegistroCalificado
 
 
@@ -8,7 +8,12 @@ class RegistroCalificadoRepositoryImpl(RegistroCalificadoRepository):
     """Implementación concreta usando Django ORM."""
 
     def save(self, programa: RegistroCalificadoEntity) -> RegistroCalificadoEntity:
-        model = RegistroCalificado.objects.create(**programa.__dict__)
+        data = programa.__dict__.copy()
+        if data.get("informe_final") is None:
+            data["informe_final"] = {}
+
+        model = RegistroCalificado.objects.create(**data)
+
         return RegistroCalificadoEntity(
             id=model.id,
             **{
@@ -28,6 +33,18 @@ class RegistroCalificadoRepositoryImpl(RegistroCalificadoRepository):
                 if field.name != "id"
             }
         )
+     
+    def find_by_llave(self, llave_id: str) -> RegistroCalificadoEntity:
+        try:
+            model = RegistroCalificado.objects.get(llave_documento=llave_id)
+        except RegistroCalificado.DoesNotExist:
+           raise NotFound(f"No existe un RegistroCalificado con llave {llave_id}")
+        data = {
+            field.name: getattr(model, field.name)
+            for field in model._meta.fields
+        }
+        return RegistroCalificadoEntity(**data)
+
     def exists_by_llave(self, llave: str) -> bool:
         return RegistroCalificado.objects.filter(llave_documento=llave).exists()
     
@@ -49,4 +66,10 @@ class RegistroCalificadoRepositoryImpl(RegistroCalificadoRepository):
             resultado.append(entity)
 
         return resultado
+    
+    def update_by_llave(self, llave: str, data: dict) -> RegistroCalificadoEntity:
+        model = RegistroCalificado.objects.get(llave_documento=llave)
+        model.informe_final = data
+        model.save()
+        return model
 

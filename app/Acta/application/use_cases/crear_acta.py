@@ -13,15 +13,16 @@ class CrearActa:
 
     def ejecutar(self, **data) -> ActaEntity:
         llave_maestra = f"LLAVE-{uuid.uuid4().hex[:8].upper()}"
+        numero_acta = uuid.uuid4().hex[:8].upper()
         creado_por = data.pop("creado_por", None)  
         registro = RegistroCalificadoEntity(
             id=None,
             llave_documento=llave_maestra,
+            numero_acta=numero_acta,
             tipo=data.get("tipo", "Posgrado"),
             snies=data.get("snies"),
         )
         self.registro_repo.save(registro)
-
         acta = ActaEntity(
             id=None,
             llave_maestra=llave_maestra,

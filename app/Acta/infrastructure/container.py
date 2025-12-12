@@ -1,4 +1,5 @@
 from dependency_injector import containers, providers
+from app.Acta.application.use_cases.actualizar_acta import ActualizarActa
 from app.Acta.infrastructure.repositories import ActaRepositoryImpl
 from app.Core.infrastructure.repositories import RegistroCalificadoRepositoryImpl
 from app.Acta.application.use_cases.crear_acta import CrearActa
@@ -19,5 +20,10 @@ class ActaContainer(containers.DeclarativeContainer):
 
     obtener_acta = providers.Factory(
         ObtenerActa,
+        acta_repo=acta_repo
+    )
+
+    actualizar_acta = providers.Factory(
+        ActualizarActa,
         acta_repo=acta_repo
     )

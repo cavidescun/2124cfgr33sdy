@@ -18,7 +18,5 @@ class CrearMediosEducativos:
         plantillas = [f"app/shared/data/Nuevo/medios_educativos.docx"]
         num = 8
         llave_maestra = data.get("llave_maestra", {})
-        servicio.generar_multiples_en_segundo_plano(
-            contexto, plantillas, llave_maestra.llave_documento, num
-        )
+        servicio.generar_multiples_en_segundo_plano(contexto, plantillas, llave_maestra.llave_documento, num)
         return self.repo.save(programa)

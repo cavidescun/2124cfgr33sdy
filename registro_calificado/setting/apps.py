@@ -12,6 +12,7 @@ THIRD_PARTY_APPS = [
     "django_json_widget",
     'rest_framework',
     'rest_framework_simplejwt',
+    "corsheaders",
 ]
 
 LOCAL_APPS = [
@@ -29,7 +30,10 @@ LOCAL_APPS = [
     "app.InvestigacionesInnovacion",
     "app.Acta",
     "app.Biblioteca",
-    "app.IAEtiquetas"
+    "app.IAEtiquetas",
+    "app.Acuerdo",
+    "app.ProyeccionInfracTecnol",
+    "app.ProyeccionFinanciera",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

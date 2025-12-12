@@ -24,54 +24,10 @@ schema_view = get_schema_view(
 urlpatterns = [
     path("admin/", admin.site.urls),
     path(
-        "api/DenominacionPrograma/",
-        include("app.DenominacionPrograma.infrastructure.urls"),
-    ),
-    path(
         "api/core/",
         include("app.Core.infrastructure.urls"),
     ),
     path(
-        "api/InfraestructuraFisicaTecnologica/",
-        include("app.InfraestructuraFisicaTecnologica.infrastructure.urls"),
-    ),
-    path(
-        "api/JustificacionPrograma/",
-        include("app.JustificacionPrograma.infrastructure.urls"),
-    ),
-    path(
-        "api/ActividadesAcademicas/",
-        include("app.ActividadesAcademicas.infrastructure.urls"),
-    ),
-    path(
-        "api/PresentacionDocumento/",
-        include("app.PresentacionDocumento.infrastructure.urls"),
-    ),
-    path(
-        "api/DocumentoMaestroPrograma/",
-        include("app.DocumentoMaestroPrograma.infrastructure.urls"),
-    ),
-    path(
-        "api/InvestigacionesInnovacion/",
-        include("app.InvestigacionesInnovacion.infrastructure.urls"),
-    ),
-    path(
-        "api/Profesores/",
-        include("app.Profesores.infrastructure.urls"),
-    ),
-    path(
-        "api/AspectosCurriculares/",
-        include("app.AspectosCurriculares.infrastructure.urls"),
-    ),
-    path(
-        "api/MediosEducativos/",
-        include("app.MediosEducativos.infrastructure.urls"),
-    ),
-    path(
-        "api/SectorExterno/",
-        include("app.SectorExterno.infrastructure.urls"),
-    ),
-        path(
         "api/acta/",
         include("app.Acta.infrastructure.urls"),
     ),
@@ -84,10 +40,23 @@ urlpatterns = [
         include("app.IAEtiquetas.infrastructure.urls"),
     ),
     path(
+        "api/acuerdo/",
+        include("app.Acuerdo.infrastructure.urls"),
+    ),
+    path(
+        "api/proyeccion-financiera/",
+        include("app.ProyeccionFinanciera.infrastructure.urls"),
+    ),
+    path(
+        "api/proyeccion-infrac-tecnologica/",
+        include("app.ProyeccionInfracTecnol.infrastructure.urls"),
+    ),
+    path(
         "swagger/",
         schema_view.with_ui("swagger", cache_timeout=0),
         name="schema-swagger-ui",
     ),
+    path("", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
     path("swagger.json", schema_view.without_ui(cache_timeout=0), name="schema-json"),
     path("swagger.yaml", schema_view.without_ui(cache_timeout=0), name="schema-yaml"),

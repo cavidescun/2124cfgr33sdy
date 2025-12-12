@@ -11,8 +11,10 @@ class RegistroCalificadoEntity:
 
     id: Optional[int]
     llave_documento: str
+    numero_acta: str
     tipo: str
     snies: str
+    informe_final: Optional = None # type: ignore
     creado_en: Optional[datetime] = None
     actualizado_en: Optional[datetime] = None
 

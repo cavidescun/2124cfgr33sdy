@@ -15,9 +15,19 @@ class RegistroCalificadoRepository(ABC):
         pass
 
     @abstractmethod
+    def find_by_llave(self, llave: str) -> RegistroCalificadoEntity:
+        pass
+
+    @abstractmethod
     def all(self) -> RegistroCalificadoEntity:
         pass
 
     @abstractmethod
     def exists_by_llave(self, id: int) -> bool:
         pass
+
+    @abstractmethod
+    def update_by_llave(llave: str, data: dict) -> RegistroCalificadoEntity:
+        pass
+
+        

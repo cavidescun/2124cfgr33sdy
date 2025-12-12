@@ -1,7 +1,18 @@
 from dependency_injector import containers, providers
 
+from app.Acta.infrastructure.repositories import ActaRepositoryImpl
+from app.Acuerdo.infrastructure.repositories import AcuerdoRepositoryImpl
+from app.Biblioteca.infrastructure.repositories import BibliotecaRepositoryImpl
+from app.Core.application.use_cases.crear_documento import CrearDocumento
+from app.Core.application.use_cases.descargar_informe import DescargarInforme
 from app.Core.application.use_cases.obtener_llaves import ObtenerLlave
+from app.Core.application.use_cases.crear_llaves import  CrearLlave
+
+from app.Core.application.use_cases.unificar_informacion import UnificarInformacion
 from app.Core.infrastructure.repositories import RegistroCalificadoRepositoryImpl
+from app.ProyeccionFinanciera.infrastructure.repositories import ProyeccionFinancieraRepositoryImpl
+from app.ProyeccionInfracTecnol.infrastructure.repositories import ProyeccionInfracTecnolRepositoryImpl
+from app.shared.logic.contextoreporte import ContextoReporte
 
 
 
@@ -9,9 +20,43 @@ class CoreContainer(containers.DeclarativeContainer):
     """Contenedor de dependencias del módulo Acta."""
 
     registro_repo = providers.Factory(RegistroCalificadoRepositoryImpl)
+    acta_repo = providers.Factory(ActaRepositoryImpl)
+    biblioteca_repo = providers.Factory(BibliotecaRepositoryImpl)
+    acuerdo_repo = providers.Factory(AcuerdoRepositoryImpl)
+    proyeccion_fi_repo = providers.Factory(ProyeccionFinancieraRepositoryImpl)
+    proyeccion_te_repo = providers.Factory(ProyeccionInfracTecnolRepositoryImpl)
+ 
 
 
     obtener_llave = providers.Factory(
         ObtenerLlave,
         registro_calificado_repo=registro_repo
     )
+
+    crear_llave = providers.Factory(
+        CrearLlave,
+        registro_calificado_repo=registro_repo
+    )
+
+    unificar_informacion = providers.Factory(
+        UnificarInformacion,
+        acta_repo=acta_repo,
+        biblioteca_repo=biblioteca_repo,
+        acuerdo_repo=acuerdo_repo,
+        proyeccion_fi_repo=proyeccion_fi_repo,
+        proyeccion_te_repo=proyeccion_te_repo,
+        registro_repo=registro_repo
+    )
+
+
+    crear_documento = providers.Factory(
+        CrearDocumento,
+        registro_repo=registro_repo,
+        crear_documento=ContextoReporte  
+    )
+
+    descargar_informe = providers.Factory(
+        DescargarInforme,
+        registro_calificado_repo=registro_repo
+    )
+
