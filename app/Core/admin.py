@@ -1,12 +1,10 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
-
+from django.db import models
 from app.Core.infrastructure.models import RegistroCalificado
-from .models import PlantillaDocumento
-
+from django_json_widget.widgets import JSONEditorWidget
 admin.site.unregister(User)
 
 @admin.register(User)
@@ -29,26 +27,27 @@ class CustomUserAdmin(BaseUserAdmin):
     search_fields = ('username', 'email', 'first_name', 'last_name')
     ordering = ('username',)
 
-@admin.register(PlantillaDocumento)
-class PlantillaDocumentoAdmin(admin.ModelAdmin):
-    list_display = ("nombre", "tipo", "ver_archivo", "actualizado_en")
-    list_filter = ("tipo",)
-    search_fields = ("nombre",)
 
-    def ver_archivo(self, obj):
-        if obj.archivo:
-            return format_html(
-                '<a href="{}" target="_blank" rel="noopener noreferrer">📄 Abrir documento</a>',
-                obj.archivo.url,
-            )
-        return "Sin archivo"
-
-    ver_archivo.short_description = "Archivo"
 
 
 @admin.register(RegistroCalificado)
 class RegistroCalificadoAdmin(admin.ModelAdmin):
-    list_display = ("llave_documento", "tipo", "snies", "creado_en", "actualizado_en")
+
+    formfield_overrides = {
+        models.JSONField: {"widget": JSONEditorWidget},
+    }
+
+    list_display = (
+        "llave_documento",
+        "unificado",
+        "tipo",
+        "snies",
+        "creado_en",
+        "actualizado_en",
+    )
+
+    list_editable = ("unificado",)  
+
     search_fields = ("llave_documento", "tipo", "snies")
-    list_filter = ("tipo",)
+    list_filter = ("tipo", "unificado")
     ordering = ("-creado_en",)

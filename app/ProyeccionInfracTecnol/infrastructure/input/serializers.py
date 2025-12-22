@@ -40,3 +40,70 @@ class ProyeccionInfracTecnolQuerySerializer(serializers.Serializer):
         required=True,
         help_text="ID del llave_id que desea obtener"
     )
+
+
+class ProyeccionInfracTecnoUpdateSerializer(serializers.Serializer):
+    llave_id = serializers.CharField(required=True)
+    etiquetas_dinamicas = serializers.DictField(child=serializers.DictField())
+
+    def validate(self, data):
+        container = self.context["container"]
+        obtener_uc = container.proyeccion_infrac_tecnol().obtener_proyeccion_infrac_tecnol()
+        acuerdo = obtener_uc.ejecutar(llave_id=data["llave_id"])
+
+        if not acuerdo:
+            raise serializers.ValidationError({"error": "Programa no encontrado"})
+
+        data["acuerdo"] = acuerdo
+
+        etiquetas_raw = acuerdo.etiquetas_dinamicas
+
+        if "variables" in etiquetas_raw:
+  
+            actuales = etiquetas_raw["variables"]
+        else:
+            # Estructura anidada (lo que TIENES actualmente)
+            actuales = etiquetas_raw.get("etiquetas_dinamicas", {}).get("variables", {})
+
+        # Nuevos datos enviados por el usuario
+        nuevas = data["etiquetas_dinamicas"].get("variables", {})
+
+        # Validar tipos
+        if not isinstance(nuevas, dict):
+            raise serializers.ValidationError(
+                {"error": "El campo 'variables' debe ser un objeto."}
+            )
+
+        # Buscar campos no válidos
+        campos_invalidos = set(nuevas.keys()) - set(actuales.keys())
+        if campos_invalidos:
+            raise serializers.ValidationError(
+                {
+                    "error": [
+                        "No se pueden actualizar campos no existentes.",
+                        f"Campos inválidos: {list(campos_invalidos)}"
+                    ]
+                }
+            )
+
+        # Guardar validaciones
+        data["campos_actualizados"] = list(nuevas.keys())
+
+        # Fusionar los datos
+        actuales_actualizados = {**actuales, **nuevas}
+
+        # Mantener la misma estructura del ACTA
+        if "variables" in etiquetas_raw:
+            # Estructura simple
+            data["etiquetas_finales"] = {
+                "variables": actuales_actualizados
+            }
+        else:
+            # Estructura anidada
+            data["etiquetas_finales"] = {
+                "etiquetas_dinamicas": {
+                    "variables": actuales_actualizados
+                }
+            }
+
+        return data

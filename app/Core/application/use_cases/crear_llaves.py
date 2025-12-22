@@ -1,5 +1,5 @@
 from app.Core.domain.entities import RegistroCalificadoEntity
-from app.Core.domain.repositories import RegistroCalificadoRepository
+from app.Core.domain.repositories.repositories import RegistroCalificadoRepository
 import uuid
 
 class CrearLlave:

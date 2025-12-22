@@ -18,3 +18,9 @@ class AcuerdoDetailResponseSerializer(AcuerdoResponseSerializer):
                 data["etiquetas_dinamicas"] = etiquetas["etiquetas_dinamicas"]
         return data
     
+
+class AccuerdoUpdateResponseSerializer(serializers.Serializer):
+    llave_id = serializers.CharField()
+    campos_actualizados = serializers.ListField(
+        child=serializers.CharField()
+    )

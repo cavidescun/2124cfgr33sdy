@@ -246,7 +246,7 @@ formulario_posgrado_example = {
 crear_proyeccion_infrac_tecnol_doc = {
     "operation_summary": "crear una proyección de infraestructura tecnológica",
     "operation_description": " crea una proyección en la estructura JSON.",
-    "tags": ["Proyección Infraestructura y Tecnológica"],
+    "tags": ["Proyección Infraestructura"],
     "request_body": openapi.Schema(
         type=openapi.TYPE_OBJECT,
         example=formulario_posgrado_example
@@ -264,7 +264,7 @@ crear_proyeccion_infrac_tecnol_doc = {
 obtener_proyeccion_infrac_tecnol_doc = {
     "operation_summary": "Obtener una proyección de infraestructura tecnológica",
     "operation_description": " Obtener una proyección en la estructura JSON.",
-    "tags": ["Proyección Infraestructura y Tecnológica"],
+    "tags": ["Proyección Infraestructura"],
      "manual_parameters": [
         openapi.Parameter(
             name="llave_id",
@@ -297,7 +297,7 @@ obtener_proyeccion_infrac_tecnol_doc = {
 actualizar_proyeccion_infrac_tecnol_doc = {
     "operation_summary": "Actualizar parcialmente una proyección de infraestructura y tecnológica",
     "operation_description": "Permite actualizar uno o varios campos de una proyección de infraestructura existente. Se pueden actualizar campos individuales, años específicos, o categorías completas de la tabla.",
-    "tags": ["Proyección Infraestructura y Tecnológica"],
+    "tags": ["Proyección Infraestructura"],
     "manual_parameters": [
         openapi.Parameter(
             name="llave_id",

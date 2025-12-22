@@ -1,127 +1,135 @@
-import os
-from datetime import datetime
 from typing import Optional, List, Dict
-from app.Core.domain.repositories import RegistroCalificadoRepository
+from datetime import datetime
+import boto3
+from botocore.exceptions import ClientError
+from app.Core.domain.repositories.repositories import RegistroCalificadoRepository
 
 
 class DescargarInforme:
-    
-    def __init__(self, registro_calificado_repo: RegistroCalificadoRepository, output_path: str = "/app/output"):
+
+    def __init__(
+        self,
+        registro_calificado_repo: RegistroCalificadoRepository,
+        bucket_name: str = "cun-repo-registrocalificado"
+    ):
         self.registro_calificado_repo = registro_calificado_repo
-        self.output_path = output_path
+        self.bucket = bucket_name
+        self.s3 = boto3.client("s3")
 
-    def _fecha_mod(self, ruta: str) -> str:
-        """Convierte timestamp a formato ISO 8601"""
-        timestamp = os.path.getmtime(ruta)
-        return datetime.fromtimestamp(timestamp).strftime("%Y-%m-%dT%H:%M:%S")
+    def _fecha_iso(self, last_modified) -> str:
+        return last_modified.strftime("%Y-%m-%dT%H:%M:%S")
 
-    def _carpeta_existe(self, llave: str) -> bool:
-        """Verifica si existe la carpeta para una llave"""
-        ruta_carpeta = os.path.join(self.output_path, llave)
-        return os.path.exists(ruta_carpeta) and os.path.isdir(ruta_carpeta)
-
-    def _obtener_estado_llave(self, llave: str) -> str:
-        """Determina el estado según la existencia de la carpeta"""
-        return "success" if self._carpeta_existe(llave) else "proceso"
-
-    def obtener_archivo(self, llave: str, filename: str) -> Optional[str]:
-        """
-        Retorna la ruta completa del archivo si existe.
-        Returns None si no existe.
-        """
-        # Validar que la llave existe en BD
+    def obtener_archivo(self, llave: str, filename: str):
         if not self.registro_calificado_repo.exists_by_llave(llave):
             raise ValueError(f"La llave '{llave}' no existe en la base de datos")
 
-        ruta_archivo = os.path.join(self.output_path, llave, filename)
-        
-        if not os.path.exists(ruta_archivo):
-            return None
-            
-        return ruta_archivo
+        key = f"{llave}/{filename}"
+
+        obj = self.s3.get_object(
+            Bucket=self.bucket,
+            Key=key
+        )
+
+        return obj["Body"], obj["ContentLength"]
 
     def listar_archivos(
-        self, 
+        self,
         llave: Optional[str] = None,
         page: int = 1,
         page_size: int = 10,
         base_url: str = ""
     ) -> Dict:
         """
-        Lista archivos disponibles. Si se proporciona llave, filtra por esa llave.
-        Solo muestra llaves que existen en la base de datos.
+        Lista archivos manteniendo el formato original del frontend.
+        
+        IMPORTANTE: Ahora pagina correctamente a nivel de REGISTROS.
+        Cada archivo incluye información de su registro padre.
         """
+        
         archivos = []
 
-        if not os.path.exists(self.output_path):
-            return {
-                "count": 0,
-                "page": page,
-                "page_size": page_size,
-                "results": []
-            }
-
-        # Si se proporciona llave específica
         if llave:
-            # Validar que existe en BD
+            # Caso específico: una sola llave
             if not self.registro_calificado_repo.exists_by_llave(llave):
                 raise ValueError(f"La llave '{llave}' no existe en la base de datos")
 
-            archivos = self._listar_archivos_de_llave(llave, base_url)
-        
-        # Si no se proporciona llave, listar todas las llaves de BD
+            archivos = self._listar_por_llave(llave, base_url)
+
         else:
-            # Obtener todas las llaves registradas en BD
-            registros = self.registro_calificado_repo.all()
+            # Caso general: paginar registros y listar archivos de cada uno
+            registros = self.registro_calificado_repo.all(page=page, page_size=page_size)
             
             for registro in registros:
-                llave_bd = registro.llave_documento
-                archivos.extend(self._listar_archivos_de_llave(llave_bd, base_url))
+                archivos.extend(
+                    self._listar_por_llave(registro.llave_documento, base_url)
+                )
 
-        # Paginación
-        total = len(archivos)
-        start = (page - 1) * page_size
-        end = start + page_size
-        resultados = archivos[start:end]
+        # Obtener conteo total de REGISTROS (no de archivos)
+        total_registros = self.registro_calificado_repo.count_all() if not llave else 1
 
         return {
-            "count": total,
+            "count": total_registros,
             "page": page,
             "page_size": page_size,
-            "results": resultados
+            "total_pages": (total_registros + page_size - 1) // page_size if total_registros else 0,
+            "results": archivos
         }
 
-    def _listar_archivos_de_llave(self, llave: str, base_url: str) -> List[Dict]:
-        """
-        Lista archivos de una llave específica.
-        Si la carpeta no existe, retorna info básica sin archivos.
-        """
-        archivos = []
-        ruta_carpeta = os.path.join(self.output_path, llave)
-        estado = self._obtener_estado_llave(llave)
+    def _listar_por_llave(self, llave: str, base_url: str) -> List[Dict]:
+        """Lista archivos de una llave específica en S3."""
+        prefix = f"{llave}/"
 
-        # Si la carpeta no existe, solo retornar info de la llave con estado "proceso"
-        if not os.path.exists(ruta_carpeta):
-            return [{
-                "llave_maestra": llave,
-                "status": estado,
-                "message": "Procesando documentos..."
-            }]
+        try:
+            response = self.s3.list_objects_v2(
+                Bucket=self.bucket,
+                Prefix=prefix
+            )
 
-        # Si existe la carpeta, listar archivos
-        for nombre in os.listdir(ruta_carpeta):
-            ruta_archivo = os.path.join(ruta_carpeta, nombre)
+            if "Contents" not in response:
+                return [{
+                    "llave_maestra": llave,
+                    "status": "proceso",
+                    "message": "Procesando documentos...",
+                    "filename": None,
+                    "size": None,
+                    "modified": None,
+                    "download_url": None
+                }]
 
-            if os.path.isfile(ruta_archivo):
-                download_url = f"{base_url}?llave_maestra={llave}&file={nombre}"
-                
+            archivos = []
+
+            for obj in response["Contents"]:
+                if obj["Key"].endswith("/"):
+                    continue
+
+                nombre = obj["Key"].split("/")[-1]
+
                 archivos.append({
                     "llave_maestra": llave,
                     "filename": nombre,
-                    "size": os.path.getsize(ruta_archivo),
-                    "modified": self._fecha_mod(ruta_archivo),
-                    "status": estado,
-                    "download_url": download_url,
+                    "size": obj["Size"],
+                    "modified": self._fecha_iso(obj["LastModified"]),
+                    "status": "success",
+                    "download_url": f"{base_url}?llave_maestra={llave}&file={nombre}"
                 })
 
-        return archivos
+            return archivos or [{
+                "llave_maestra": llave,
+                "status": "success",
+                "message": "Carpeta vacía - sin archivos disponibles",
+                "filename": None,
+                "size": None,
+                "modified": None,
+                "download_url": None
+            }]
+
+        except ClientError as e:
+            return [{
+                "llave_maestra": llave,
+                "status": "error",
+                "message": str(e),
+                "filename": None,
+                "size": None,
+                "modified": None,
+                "download_url": None
+            }]

@@ -7,8 +7,10 @@ from enum import Enum
 @dataclass
 class BibliotecaEntity:
     id: Optional[int]
+    estatus:Optional[bool]
     llave_maestra: Optional[str]
     etiquetas_dinamicas: Optional[Dict[str, Any]] = None
     creado_en: Optional[datetime] = None
     actualizado_en: Optional[datetime] = None
     creado_por_id: Optional[int] = None  
+    modificado_por: Optional[int] = None  

@@ -248,7 +248,7 @@ email_token_doc = {
                 type=openapi.TYPE_STRING,
                 format=openapi.FORMAT_EMAIL,
                 description="Email del usuario registrado en el sistema",
-                example="usuario@example.com"
+                example="admin@example.com"
             ),
         }
     ),
@@ -473,3 +473,81 @@ generar_documento_doc = {
     }
 }
 
+
+
+punto_de_control = {
+    "operation_summary": "Verificar estado de información para unificación",
+    "operation_description": (
+        "Verifica si la información asociada a una llave maestra está completa y lista "
+        "para ejecutar el proceso de unificación.\n\n"
+        "**Propósito del endpoint:**\n"
+        "- Permite al frontend determinar si el botón de 'Unificar' debe habilitarse.\n"
+        "- No ejecuta el proceso de unificación, solo valida el estado actual.\n\n"
+        "**Flujo del proceso:**\n"
+        "1. Valida que la llave maestra tenga el formato correcto.\n"
+        "2. Consulta si ya existe toda la información requerida.\n"
+        "3. Retorna un estado indicando si está lista o no.\n\n"
+        "**Tiempo de respuesta:** Rápido, ya que solo consulta el estado."
+    ),
+    "tags": ["Procesos"],
+
+    # ❗ Se elimina request_body y se usa manual_parameters para query params
+    "manual_parameters": [
+        openapi.Parameter(
+            name="llave_maestra",
+            in_=openapi.IN_QUERY,
+            description="Identificador único del proceso",
+            required=True,
+            type=openapi.TYPE_STRING,
+            pattern="^LLAVE-[A-Z0-9]+$",
+            example="LLAVE-E26E95BF",
+        )
+    ],
+
+    "responses": {
+        200: openapi.Response(
+            description="Estado consultado correctamente",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    "message": openapi.Schema(type=openapi.TYPE_STRING),
+                    "data": openapi.Schema(
+                        type=openapi.TYPE_OBJECT,
+                        properties={
+                            "acta": openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                            "biblioteca": openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                            "acuerdo": openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                            "proyeccion_financiera": openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                            "proyeccion_infra_tecnologica": openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                        }
+                    )
+                },
+                example={
+                    "message": "Estados obtenidos exitosamente",
+                    "data": {
+                        "acta": True,
+                        "biblioteca": True,
+                        "acuerdo": False,
+                        "proyeccion_financiera": True,
+                        "proyeccion_infra_tecnologica": True
+                    }
+                }
+            )
+        ),
+
+        400: openapi.Response(
+            description="Datos inválidos o llave maestra con formato incorrecto",
+        ),
+
+        500: openapi.Response(
+            description="Error interno al revisar el estado",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    "detail": openapi.Schema(type=openapi.TYPE_STRING)
+                },
+                example={"detail": "Error al verificar el estado de la llave maestra"}
+            )
+        ),
+    }
+}

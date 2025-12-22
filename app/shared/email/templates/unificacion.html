@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Información unificada - CUN</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #f4f6f9;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #333;
+        }
+
+        .container {
+            max-width: 620px;
+            margin: auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 1s ease-in;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #003A8F, #0056D2);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header img {
+            max-width: 140px;
+            margin-bottom: 10px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .content h2 {
+            color: #003A8F;
+        }
+
+        .info-box {
+            background-color: #f1f5ff;
+            border-left: 5px solid #0056D2;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+
+        .warning-box {
+            background-color: #fff4e5;
+            border-left: 5px solid #ff9800;
+            padding: 15px;
+            margin: 25px 0;
+            border-radius: 6px;
+        }
+
+        .warning-box p {
+            margin: 6px 0;
+            font-size: 14px;
+        }
+
+        .footer {
+            background-color: #f0f2f5;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .footer img {
+            max-width: 80px;
+            margin-top: 10px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="header">
+            <img src="https://www.cun.edu.co/sites/default/files/logo-cun-blanco.png" alt="CUN">
+            <h1>Corporación Unificada Nacional</h1>
+        </div>
+
+        <div class="content">
+            <h2>Información unificada correctamente 🔒</h2>
+
+
+
+            <p>
+                Te informamos que la información asociada al proceso académico
+                ha sido <strong>unificada exitosamente</strong>.
+            </p>
+
+            <div class="info-box">
+                <p><strong>Llave del documento:</strong> {{ llave_maestra }}</p>
+                <p><strong>Fecha de unificación:</strong> {{ fecha_unificacion }}</p>
+                <p><strong>Estado del proceso:</strong> Información consolidada</p>
+            </div>
+
+            <div class="warning-box">
+                <p><strong>⚠ Importante</strong></p>
+                <p>
+                    A partir de este momento, <strong>no es posible realizar modificaciones</strong>
+                    sobre la información registrada.
+                </p>
+                <p>
+                    Si se requiere algún ajuste, deberá gestionarse a través de los
+                    canales académicos correspondientes.
+                </p>
+            </div>
+
+            <p>
+                Gracias por completar el proceso de manera correcta y oportuna.
+            </p>
+
+            <p>
+                💙 CUN – Comprometidos con la calidad académica
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>
+                Este correo fue generado automáticamente por el sistema académico CUN.
+            </p>
+            <img src="https://www.cun.edu.co/sites/default/files/logo-cun.png" alt="CUN">
+        </div>
+
+    </div>
+
+</body>
+
+</html>

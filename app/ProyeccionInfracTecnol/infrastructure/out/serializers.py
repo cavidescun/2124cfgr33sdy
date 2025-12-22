@@ -18,3 +18,9 @@ class ProyeccionInfracTecnolDetailResponseSerializer(ProyeccionInfracTecnolRespo
                 data["etiquetas_dinamicas"] = etiquetas["etiquetas_dinamicas"]
         return data
     
+
+class  ProyeccionInfracTecnoUpdateResponseSerializer(serializers.Serializer):
+    llave_id = serializers.CharField()
+    campos_actualizados = serializers.ListField(
+        child=serializers.CharField()
+    )

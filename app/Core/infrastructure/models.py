@@ -7,6 +7,11 @@ class RegistroCalificado(models.Model):
     )
     tipo = models.CharField("Tipo de documento", max_length=50, null=True, blank=True)
     numero_acta = models.CharField("acta", max_length=50, unique=True, null=True, blank=True)
+    unificado = models.BooleanField(
+        null=True,
+        default=False,
+        help_text="Indica si ya se realizo la unificacion"
+    )
     snies = models.CharField("SNIES", max_length=50, unique=True, null=True, blank=True)
     informe_final = models.JSONField(
         "Campos adicionales",
@@ -19,3 +24,5 @@ class RegistroCalificado(models.Model):
 
     def __str__(self):
         return self.llave_documento
+
+

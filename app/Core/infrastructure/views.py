@@ -4,9 +4,9 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from app.Core.infrastructure.input.serializers import GenerarDocumentoSerializer, UnificacionInformacionSerializer
+from app.Core.infrastructure.input.serializers import GenerarDocumentoSerializer, PuntoControlQuerySerializer, UnificacionInformacionSerializer
 from app.Core.infrastructure.out.serializers import UnificarResponseSerializer
-from .documentation.swagger_docs import listar_archivos_doc,email_token_doc,generar_documento_doc,unificacion_informacion_doc
+from .documentation.swagger_docs import listar_archivos_doc,email_token_doc,generar_documento_doc,unificacion_informacion_doc,punto_de_control
 
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import get_user_model
@@ -14,7 +14,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import EmailTokenSerializer, RegistroCalificadoEntitySerializer
 from app.shared.container import container
 
-from django.http import FileResponse
+from django.http import FileResponse, StreamingHttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -49,6 +49,7 @@ class GenerarInformeView(APIView):
         
 class EmailTokenView(APIView):
     permission_classes = [AllowAny]
+
     @swagger_auto_schema(**email_token_doc)
     def post(self, request):
         serializer = EmailTokenSerializer(data=request.data)
@@ -57,62 +58,95 @@ class EmailTokenView(APIView):
         email = serializer.validated_data['email']
         User = get_user_model()
         user = User.objects.get(email=email)
+        role = user.groups.first().name if user.groups.exists() else None
         refresh = RefreshToken.for_user(user)
-        return Response({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }, status=status.HTTP_200_OK)
-    
+        refresh['role'] = role
+
+        return Response(
+            {
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+                'role': role, 
+            },
+            status=status.HTTP_200_OK
+        )
 class DescargarInformeView(APIView):
 
     @swagger_auto_schema(**listar_archivos_doc)
     def get(self, request):
         llave = request.query_params.get("llave_maestra")
         file = request.query_params.get("file")
-        
-        descargar_informe_usecase = container.core().descargar_informe()
-        if file and llave:
-            try:
-                ruta_archivo = descargar_informe_usecase.obtener_archivo(llave, file)
-                
-                if not ruta_archivo:
-                    return Response({"error": "El archivo no existe"}, status=404)
 
-                return FileResponse(
-                    open(ruta_archivo, "rb"),
-                    as_attachment=True,
-                    filename=file,
-                    content_type="application/octet-stream"
+        descargar_informe_usecase = container.core().descargar_informe()
+
+        # ===============================
+        # DESCARGA DE ARCHIVO
+        # ===============================
+        if llave and file:
+            try:
+                stream, content_length = descargar_informe_usecase.obtener_archivo(llave, file)
+
+                response = StreamingHttpResponse(
+                    stream,
+                    content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                 )
-            
+                response["Content-Disposition"] = f'attachment; filename="{file}"'
+                response["Content-Length"] = content_length
+
+                return response
+
             except ValueError as e:
                 return Response({"error": str(e)}, status=404)
-            
+
+
             except Exception as e:
                 return Response(
-                    {"error": f"Error al descargar archivo: {str(e)}"}, 
+                    {"error": f"Error al descargar archivo: {str(e)}"},
                     status=500
                 )
-    
+
+        # ===============================
+        # LISTADO
+        # ===============================
         try:
             page = int(request.query_params.get("page", 1))
             page_size = int(request.query_params.get("page_size", 10))
             base_url = request.build_absolute_uri('/api/core/descargar-informe')
-            
+
             resultado = descargar_informe_usecase.listar_archivos(
                 llave=llave,
                 page=page,
                 page_size=page_size,
                 base_url=base_url
             )
-            
+
             return Response(resultado)
-        
+
         except ValueError as e:
             return Response({"error": str(e)}, status=404)
-        
+
         except Exception as e:
             return Response(
-                {"error": f"Error al listar archivos: {str(e)}"}, 
+                {"error": f"Error al listar archivos: {str(e)}"},
                 status=500
             )
+        
+
+class PuntoDecontrolView(APIView):
+    @swagger_auto_schema(**punto_de_control) 
+    def get(self, request, *args, **kwargs):
+        serializer = PuntoControlQuerySerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+
+        llave_id = serializer.validated_data["llave_maestra"]
+
+        use_case = container.core().punto_de_control()
+        resultado = use_case.ejecutar(llave_id)
+
+        response = {
+            "message": "Estados obtenidos exitosamente",
+            "data": resultado
+        }
+
+        return Response(response, status=200)
+    

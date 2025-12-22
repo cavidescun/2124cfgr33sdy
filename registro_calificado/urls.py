@@ -48,8 +48,13 @@ urlpatterns = [
         include("app.ProyeccionFinanciera.infrastructure.urls"),
     ),
     path(
-        "api/proyeccion-infrac-tecnologica/",
+        "api/proyeccion-infraestructura/",
         include("app.ProyeccionInfracTecnol.infrastructure.urls"),
+    ),
+
+    path(
+        "api/proyeccion-tecnologica/",
+        include("app.ProyeccionTecnologica.infrastructure.urls"),
     ),
     path(
         "swagger/",

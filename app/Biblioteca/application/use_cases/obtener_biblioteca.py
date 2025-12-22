@@ -9,3 +9,5 @@ class ObtenerBiblioteca:
     def ejecutar(self, llave_id: str) ->BibliotecaEntity:
         biblioteca_entity = self.biblioteca_repo.find_by_llave(llave_id)
         return biblioteca_entity
+    
+    

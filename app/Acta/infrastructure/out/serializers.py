@@ -28,3 +28,7 @@ class ActaUpdateResponseSerializer(serializers.Serializer):
     campos_actualizados = serializers.ListField(
         child=serializers.CharField()
     )
+
+class ActaAprobacionResponseSerializer(serializers.Serializer):
+    llave_id = serializers.UUIDField()
+    aprobado = serializers.BooleanField()

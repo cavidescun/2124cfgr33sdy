@@ -8,11 +8,16 @@ from app.Core.application.use_cases.descargar_informe import DescargarInforme
 from app.Core.application.use_cases.obtener_llaves import ObtenerLlave
 from app.Core.application.use_cases.crear_llaves import  CrearLlave
 
+from app.Core.application.use_cases.punto_de_control import PuntoDeControl
 from app.Core.application.use_cases.unificar_informacion import UnificarInformacion
-from app.Core.infrastructure.repositories import RegistroCalificadoRepositoryImpl
+from app.Core.infrastructure.repositories.repositories import RegistroCalificadoRepositoryImpl
+from app.Core.infrastructure.repositories.repositories_user import UserRepositoryImpl
 from app.ProyeccionFinanciera.infrastructure.repositories import ProyeccionFinancieraRepositoryImpl
 from app.ProyeccionInfracTecnol.infrastructure.repositories import ProyeccionInfracTecnolRepositoryImpl
+from app.ProyeccionTecnologica.infrastructure.repositories import ProyeccionTecnologicaRepositoryImpl
 from app.shared.logic.contextoreporte import ContextoReporte
+from app.shared.email.email_service_impl import MailServiceImpl
+from app.shared.email.email_template_renderer import EmailTemplateRenderer
 
 
 
@@ -25,7 +30,10 @@ class CoreContainer(containers.DeclarativeContainer):
     acuerdo_repo = providers.Factory(AcuerdoRepositoryImpl)
     proyeccion_fi_repo = providers.Factory(ProyeccionFinancieraRepositoryImpl)
     proyeccion_te_repo = providers.Factory(ProyeccionInfracTecnolRepositoryImpl)
- 
+    tecnologico_repo = providers.Factory(ProyeccionTecnologicaRepositoryImpl)
+    email_service=providers.Factory(MailServiceImpl)
+    template_renderer = providers.Singleton(EmailTemplateRenderer)
+    repo_user = providers.Singleton(UserRepositoryImpl)
 
 
     obtener_llave = providers.Factory(
@@ -45,7 +53,11 @@ class CoreContainer(containers.DeclarativeContainer):
         acuerdo_repo=acuerdo_repo,
         proyeccion_fi_repo=proyeccion_fi_repo,
         proyeccion_te_repo=proyeccion_te_repo,
-        registro_repo=registro_repo
+        tecnologico_repo=tecnologico_repo,
+        registro_repo=registro_repo,
+        email_service=email_service,
+        template_renderer=template_renderer,
+        repo_user=repo_user
     )
 
 
@@ -58,5 +70,16 @@ class CoreContainer(containers.DeclarativeContainer):
     descargar_informe = providers.Factory(
         DescargarInforme,
         registro_calificado_repo=registro_repo
+    )
+
+
+    punto_de_control = providers.Factory(
+        PuntoDeControl,
+        acta_repo=acta_repo,
+        biblioteca_repo=biblioteca_repo,
+        acuerdo_repo=acuerdo_repo,
+        proyeccion_fi_repo=proyeccion_fi_repo,
+        proyeccion_te_repo=proyeccion_te_repo,
+        tecnologico_repo=tecnologico_repo
     )
 

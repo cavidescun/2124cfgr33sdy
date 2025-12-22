@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Acta creada - CUN</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #f4f6f9;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #333;
+        }
+
+        .container {
+            max-width: 620px;
+            margin: auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 1s ease-in;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #003A8F, #0056D2);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header img {
+            max-width: 140px;
+            margin-bottom: 10px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .content h2 {
+            color: #003A8F;
+        }
+
+        .info-box {
+            background-color: #f1f5ff;
+            border-left: 5px solid #0056D2;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+
+        .info-box p {
+            margin: 6px 0;
+            font-size: 14px;
+        }
+
+        .cta-button {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .cta-button a {
+            background: linear-gradient(135deg, #003A8F, #0056D2);
+            color: #ffffff;
+            padding: 14px 28px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-fallback {
+            font-size: 13px;
+            color: #666;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .cta-link {
+            font-size: 12px;
+            word-break: break-all;
+            text-align: center;
+            margin-top: 6px;
+        }
+
+        .cta-link a {
+            color: #0056D2;
+        }
+
+        .footer {
+            background-color: #f0f2f5;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .footer img {
+            max-width: 80px;
+            margin-top: 10px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-6px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="header">
+            <img src="https://www.cun.edu.co/sites/default/files/logo-cun-blanco.png" alt="CUN">
+            <h1>Corporación Unificada Nacional</h1>
+        </div>
+
+        <div class="content">
+            <h2>¡Acta creada exitosamente! 🎉</h2>
+
+            <p>Hola <strong>{{ nombre_usuario }}</strong>,</p>
+
+            <p>
+                Te informamos que el proceso académico fue realizado correctamente.
+                A continuación encontrarás los detalles del acta creada:
+            </p>
+
+            <div class="info-box">
+                <p><strong>Llave del documento:</strong> {{ llave_maestra }}</p>
+                <p><strong>Número de acta:</strong> {{ numero_acta }}</p>
+                <p><strong>Tipo:</strong> {{ tipo }}</p>
+            </div>
+
+            <!-- BOTÓN DE APROBACIÓN -->
+            <div class="cta-button">
+                <a href="{{ url_aprobacion }}">
+                    🔍 Revisar y aprobar acta
+                </a>
+            </div>
+
+            <!-- LINK FALLBACK -->
+            <div class="cta-fallback">
+                Si el botón no funciona, copia y pega el siguiente enlace en tu navegador:
+            </div>
+
+            <div class="cta-link">
+                <a href="{{ url_aprobacion }}">
+                    {{ url_aprobacion }}
+                </a>
+            </div>
+
+            {% if variables %}
+            <h3 style="color:#003A8F; margin-top:30px;">
+                Información del programa
+            </h3>
+
+            <table width="100%" cellpadding="10" cellspacing="0" style="border-collapse: collapse; font-size: 14px;">
+
+                {% for key, value in variables.items() %}
+                <tr>
+                    <td style="border-bottom:1px solid #e0e0e0; font-weight:bold; width:40%; background-color:#f9fbff;">
+                        {{ key.replace('_', ' ').capitalize() }}
+                    </td>
+
+                    <td style="border-bottom:1px solid #e0e0e0;">
+                        {% if value is boolean %}
+                        {{ "Sí" if value else "No" }}
+                        {% elif value is iterable and value is not string %}
+                        {{ value | join(', ') }}
+                        {% else %}
+                        {{ value }}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+
+            </table>
+            {% endif %}
+
+            <p style="margin-top:30px;">
+                Si necesitas soporte o información adicional, puedes comunicarte con el
+                área académica de la CUN.
+            </p>
+
+            <p>
+                ¡Gracias por confiar en nosotros! 💙
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>
+                Este correo fue generado automáticamente por el sistema académico CUN.
+            </p>
+            <img src="https://www.cun.edu.co/sites/default/files/logo-cun.png" alt="CUN">
+        </div>
+
+    </div>
+
+</body>
+
+</html>

@@ -21,3 +21,10 @@ class BibliotecaDetailResponseSerializer(BibliotecaResponseSerializer):
                 data["etiquetas_dinamicas"] = etiquetas["etiquetas_dinamicas"]
         return data
     
+
+
+class  BibliotecaUpdateResponseSerializer(serializers.Serializer):
+    llave_id = serializers.CharField()
+    campos_actualizados = serializers.ListField(
+        child=serializers.CharField()
+    )

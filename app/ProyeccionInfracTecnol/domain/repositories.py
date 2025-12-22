@@ -15,3 +15,23 @@ class ProyeccionInfracTecnolRepository(ABC):
     @abstractmethod
     def find_by_llave(self, id: int) -> ProyeccionInfracTecnolEntity:
         pass
+
+    @abstractmethod
+    def estatus(self, id: int) -> ProyeccionInfracTecnolEntity:
+        pass
+
+    @abstractmethod
+    def estatus_flag(self, llave_id: str) -> None:
+        pass
+
+    @abstractmethod
+    def find_by_llave_update(self, llave_id: str) -> ProyeccionInfracTecnolEntity:
+        pass
+
+    @abstractmethod
+    def update(self, proyeccion_tecnologica: ProyeccionInfracTecnolEntity) -> ProyeccionInfracTecnolEntity:
+        """Actualiza una ProyeccionInfracTecnolEntity existente"""
+        pass
+
+
+    

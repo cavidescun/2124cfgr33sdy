@@ -2,20 +2,18 @@
 set -e
 
 echo "=== 🚀 Iniciando entorno local de desarrollo ==="
-
 echo "⌛ Esperando a que las bases de datos estén listas..."
-
 
 echo "📊 Verificando PostgreSQL..."
 until python -c "import psycopg2; psycopg2.connect(host='${POSTGRES_HOST}', user='${POSTGRES_USER}', password='${POSTGRES_PASSWORD}', dbname='${POSTGRES_DB}')" &> /dev/null; do
-  echo "⏳ PostgreSQL no está listo - esperando..."
-  sleep 2
+    echo "⏳ PostgreSQL no está listo - esperando..."
+    sleep 2
 done
 echo "✅ PostgreSQL está listo"
 
 echo "📊 Verificando SQL Server..."
-
 echo "🔧 Inicializando base de datos SQL Server..."
+
 python << 'PYEND'
 import pyodbc
 import os
@@ -47,7 +45,7 @@ try:
         cursor.execute(f"CREATE DATABASE [{database}]")
         print(f"✅ Base de datos '{database}' creada")
     else:
-        print(f"ℹ️  Base de datos '{database}' ya existe")
+        print(f"ℹ️ Base de datos '{database}' ya existe")
     
     # 2. Verificar/Crear login
     cursor.execute(f"SELECT name FROM sys.server_principals WHERE name = '{user}'")
@@ -56,7 +54,7 @@ try:
         cursor.execute(f"CREATE LOGIN [{user}] WITH PASSWORD = '{user_password}'")
         print(f"✅ Login '{user}' creado")
     else:
-        print(f"ℹ️  Login '{user}' ya existe")
+        print(f"ℹ️ Login '{user}' ya existe")
     
     # 3. Cambiar a la base de datos
     cursor.execute(f"USE [{database}]")
@@ -69,7 +67,7 @@ try:
         cursor.execute(f"ALTER ROLE db_owner ADD MEMBER [{user}]")
         print(f"✅ Usuario '{user}' creado con permisos de propietario")
     else:
-        print(f"ℹ️  Usuario '{user}' ya existe en la base de datos")
+        print(f"ℹ️ Usuario '{user}' ya existe en la base de datos")
         # Asegurar que tenga permisos (por si acaso)
         cursor.execute(f"ALTER ROLE db_owner ADD MEMBER [{user}]")
     
@@ -87,38 +85,50 @@ PYEND
 echo "📦 Aplicando migraciones..."
 python manage.py migrate --noinput
 
-echo "👤 Verificando superusuario y grupo admin..."
+echo "👥 Creando usuario administrador..."
 python manage.py shell << 'END'
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 import os
 
 User = get_user_model()
-username = os.getenv("DJANGO_SUPERUSER_USERNAME", "admin")
+
+print("=" * 60)
+print("🏗️ CREACIÓN DE USUARIO ADMINISTRADOR")
+print("=" * 60)
+
+# Datos del admin
+username = 'admin'
 password = os.getenv("DJANGO_SUPERUSER_PASSWORD", "admin")
-email = os.getenv("DJANGO_SUPERUSER_EMAIL", "admin@example.com")
+email = 'admin@example.com'
+group_name = 'admin'
 
-# Crear o obtener el grupo "admin"
-admin_group, created = Group.objects.get_or_create(name='admin')
-if created:
-    print(f"✅ Grupo 'admin' creado.")
+# Crear o obtener el grupo admin
+group, group_created = Group.objects.get_or_create(name=group_name)
+if group_created:
+    print(f"✅ Grupo '{group_name}' creado.")
 else:
-    print(f"ℹ️  El grupo 'admin' ya existe.")
+    print(f"ℹ️ El grupo '{group_name}' ya existe.")
 
-# Crear o obtener el superusuario
+# Crear o obtener el usuario admin
 if not User.objects.filter(username=username).exists():
-    user = User.objects.create_superuser(username=username, password=password, email=email)
+    user = User.objects.create_superuser(
+        username=username,
+        password=password,
+        email=email
+    )
     print(f"✅ Superusuario '{username}' creado.")
 else:
     user = User.objects.get(username=username)
-    print(f"ℹ️  El superusuario '{username}' ya existe.")
+    print(f"ℹ️ El usuario '{username}' ya existe.")
 
-# Agregar el usuario al grupo admin
-if not user.groups.filter(name='admin').exists():
-    user.groups.add(admin_group)
-    print(f"✅ Usuario '{username}' agregado al grupo 'admin'.")
+# Agregar el usuario al grupo
+if not user.groups.filter(name=group_name).exists():
+    user.groups.add(group)
+    print(f"✅ Usuario '{username}' agregado al grupo '{group_name}'.")
 else:
-    print(f"ℹ️  El usuario '{username}' ya pertenece al grupo 'admin'.")
+    print(f"ℹ️ El usuario '{username}' ya pertenece al grupo '{group_name}'.")
+
 END
 
 echo "✅ Todo listo. Iniciando servidor de desarrollo..."

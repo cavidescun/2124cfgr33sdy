@@ -10,7 +10,7 @@ class ActaAdmin(admin.ModelAdmin):
         models.JSONField: {"widget": JSONEditorWidget},
     }
 
-    list_display = ("llave_maestra", "creado_por", "modificado_por", "creado_en", "actualizado_en")
+    list_display = ("llave_maestra", "aprobado","aprobado_por","estatus", "creado_por", "modificado_por", "creado_en", "actualizado_en")
     search_fields = ("llave_maestra__llave_documento", "creado_por__email")
     readonly_fields = ("creado_en", "actualizado_en", "creado_por", "modificado_por")
 
@@ -21,6 +21,8 @@ class ActaAdmin(admin.ModelAdmin):
                 "fields": ("llave_maestra",),
             },
         ),
+
+        
         (
             "Etiquetas dinámicas",
             {

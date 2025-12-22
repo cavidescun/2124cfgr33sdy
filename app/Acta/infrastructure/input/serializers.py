@@ -74,8 +74,6 @@ class ActaUpdateSerializer(serializers.Serializer):
 
     def validate(self, data):
         container = self.context["container"]
-
-        # 1. Obtener acta
         obtener_uc = container.acta().obtener_acta()
         acta = obtener_uc.ejecutar(llave_id=data["llave_id"])
 
@@ -84,13 +82,10 @@ class ActaUpdateSerializer(serializers.Serializer):
 
         data["acta"] = acta
 
-        # -----------------------------------------------------------
-        # 2. DETECCIÓN INTELIGENTE DE ESTRUCTURA (1 o 2 niveles)
-        # -----------------------------------------------------------
         etiquetas_raw = acta.etiquetas_dinamicas
 
         if "variables" in etiquetas_raw:
-            # Estructura simple
+  
             actuales = etiquetas_raw["variables"]
         else:
             # Estructura anidada (lo que TIENES actualmente)
@@ -139,3 +134,7 @@ class ActaUpdateSerializer(serializers.Serializer):
 
         return data
 
+
+class ActaAprobacionSerializer(serializers.Serializer):
+    llave_id = serializers.CharField(required=True)
+    flag = serializers.BooleanField(required=True)

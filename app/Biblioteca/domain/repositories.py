@@ -18,3 +18,22 @@ class BibliotecaRepository(ABC):
     def find_by_llave(self, id: int) -> BibliotecaEntity:
         pass
 
+    @abstractmethod
+    def estatus(self, acta: BibliotecaEntity) -> BibliotecaEntity:
+        pass
+
+    @abstractmethod
+    def estatus_flag(self, id: int) -> None:
+        pass
+
+    @abstractmethod
+    def find_by_llave_update(self, llave_id: str) -> BibliotecaEntity:
+        pass
+
+    @abstractmethod
+    def update(self, proyeccion_tecnologica: BibliotecaEntity) -> BibliotecaEntity:
+        """Actualiza una BibliotecaEntity existente"""
+        pass
+
+
+

@@ -1,4 +1,4 @@
-from app.Core.domain.repositories import RegistroCalificadoRepository
+from app.Core.domain.repositories.repositories import RegistroCalificadoRepository
 
 
 class ObtenerLlave:

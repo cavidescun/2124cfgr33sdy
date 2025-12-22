@@ -17,23 +17,13 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "app.Core",
-    "app.DenominacionPrograma",
-    "app.JustificacionPrograma",
-    "app.ActividadesAcademicas",
-    "app.InfraestructuraFisicaTecnologica",
-    "app.Profesores",
-    "app.AspectosCurriculares",
-    "app.MediosEducativos",
-    "app.SectorExterno",
-    "app.PresentacionDocumento",
-    "app.DocumentoMaestroPrograma",
-    "app.InvestigacionesInnovacion",
     "app.Acta",
     "app.Biblioteca",
     "app.IAEtiquetas",
     "app.Acuerdo",
     "app.ProyeccionInfracTecnol",
     "app.ProyeccionFinanciera",
+    "app.ProyeccionTecnologica",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

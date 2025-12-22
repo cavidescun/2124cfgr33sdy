@@ -141,3 +141,55 @@ actualizar_acta_doc = {
         )
     }
 }
+
+acta_aprobacion_doc = {
+    "operation_summary": "Aprobar o rechazar un acta",
+    "operation_description": (
+        "Permite aprobar o rechazar un acta existente. "
+        "El identificador del acta se envía por query params y "
+        "el estado de aprobación se envía en el body."
+    ),
+    "tags": ["Actas"],
+    "manual_parameters": [
+        openapi.Parameter(
+            name="llave_id",
+            in_=openapi.IN_QUERY,
+            description="Identificador único del acta",
+            type=openapi.TYPE_STRING,
+            required=False,  # ⬅️ no obligatorio
+            example="123e4567-e89b-12d3-a456-426614174000",
+        )
+    ],
+    "request_body": openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        description="Body libre. Se puede enviar cualquier estructura.",
+        additionalProperties=True,  # ⬅️ permite cualquier cosa
+        example={
+            "flag": True
+        }
+    ),
+    "responses": {
+        200: openapi.Response(
+            description="Estado del acta actualizado",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                additionalProperties=True,
+                example={
+                    "message": "Estado del acta actualizado correctamente",
+                    "data": {
+                        "llave_id": "123e4567-e89b-12d3-a456-426614174000",
+                        "aprobado": True
+                    }
+                },
+            ),
+        ),
+        400: openapi.Response(
+            description="Error",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                additionalProperties=True,
+                example={"error": "Error en la solicitud"},
+            ),
+        ),
+    },
+}
