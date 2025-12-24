@@ -1,20 +1,16 @@
-
-import os
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from app.Core.infrastructure.input.serializers import GenerarDocumentoSerializer, PuntoControlQuerySerializer, UnificacionInformacionSerializer
-from app.Core.infrastructure.out.serializers import UnificarResponseSerializer
-from .documentation.swagger_docs import listar_archivos_doc,email_token_doc,generar_documento_doc,unificacion_informacion_doc,punto_de_control
+from app.Core.infrastructure.input.serializers import BuscarProgramasSimilaresQuerySerializer, GenerarDocumentoSerializer, PuntoControlQuerySerializer, UnificacionInformacionSerializer
+from app.Core.infrastructure.out.serializers import ProgramaAcademicoSerializer
+from .documentation.swagger_docs import *
 
 from rest_framework.permissions import AllowAny
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import EmailTokenSerializer, RegistroCalificadoEntitySerializer
+from .serializers import EmailTokenSerializer
 from app.shared.container import container
-
-from django.http import FileResponse, StreamingHttpResponse
+from django.shortcuts import redirect
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -78,26 +74,13 @@ class DescargarInformeView(APIView):
         file = request.query_params.get("file")
 
         descargar_informe_usecase = container.core().descargar_informe()
-
-        # ===============================
-        # DESCARGA DE ARCHIVO
-        # ===============================
         if llave and file:
             try:
-                stream, content_length = descargar_informe_usecase.obtener_archivo(llave, file)
-
-                response = StreamingHttpResponse(
-                    stream,
-                    content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                )
-                response["Content-Disposition"] = f'attachment; filename="{file}"'
-                response["Content-Length"] = content_length
-
-                return response
+                url  = descargar_informe_usecase.obtener_url_objeto(llave, file)
+                return redirect(url) 
 
             except ValueError as e:
                 return Response({"error": str(e)}, status=404)
-
 
             except Exception as e:
                 return Response(
@@ -105,13 +88,10 @@ class DescargarInformeView(APIView):
                     status=500
                 )
 
-        # ===============================
-        # LISTADO
-        # ===============================
         try:
             page = int(request.query_params.get("page", 1))
             page_size = int(request.query_params.get("page_size", 10))
-            base_url = request.build_absolute_uri('/api/core/descargar-informe')
+            base_url = request.build_absolute_uri('/api/core/descargar-informe').replace("http://", "https://")
 
             resultado = descargar_informe_usecase.listar_archivos(
                 llave=llave,
@@ -147,6 +127,33 @@ class PuntoDecontrolView(APIView):
             "message": "Estados obtenidos exitosamente",
             "data": resultado
         }
-
         return Response(response, status=200)
     
+
+class BuscarProgramasSimilaresView(APIView):
+
+    @swagger_auto_schema(**buscar_programas_similares_swagger)
+    def get(self, request, *args, **kwargs):
+
+        serializer = BuscarProgramasSimilaresQuerySerializer(
+            data=request.query_params
+        )
+        serializer.is_valid(raise_exception=True)
+
+        filtros = serializer.validated_data
+        use_case = container.core().programas_similares()
+
+        programas = use_case.ejecutar(filtros)  
+
+        data = ProgramaAcademicoSerializer(
+            programas,
+            many=True
+        ).data
+
+        return Response(
+            {
+                "message": "Programas similares obtenidos exitosamente",
+                "data": data
+            },
+            status=status.HTTP_200_OK
+        )

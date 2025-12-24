@@ -1,5 +1,5 @@
 
-from app.Core.infrastructure.models import RegistroCalificado
+from app.Core.infrastructure.models.models import RegistroCalificado
 from app.Acuerdo.domain.entities import AcuerdoEntity
 from app.Acuerdo.infrastructure.models import Acuerdo
 from app.Acuerdo.domain.repositories import AcuerdoRepository

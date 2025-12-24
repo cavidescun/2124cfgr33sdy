@@ -3,7 +3,7 @@ from pathlib import Path
 from datetime import timedelta
 
 from registro_calificado.setting.paths import *
-from registro_calificado.setting.databases import DATABASES, DATABASE_ROUTERS
+from registro_calificado.setting.databases import DATABASES
 from registro_calificado.setting.logging import LOGGING
 from registro_calificado.setting.apps import INSTALLED_APPS
 from registro_calificado.setting.host import (

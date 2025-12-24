@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from app.Core.infrastructure.models import RegistroCalificado
+from app.Core.infrastructure.models.models import RegistroCalificado
 
 
 def validar_llave_maestra(value):

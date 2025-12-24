@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from app.Core.infrastructure.models import RegistroCalificado
+from app.Core.infrastructure.models.models import RegistroCalificado
 from django.conf import settings
 class Acuerdo(models.Model):
     llave_maestra = models.ForeignKey(

@@ -1,6 +1,7 @@
 # app/models.py
 import os
-from .infrastructure.models import *
+from .infrastructure.models.models import *
+from .infrastructure.models.models_snies import *
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.db import models

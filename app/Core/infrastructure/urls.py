@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import EmailTokenView,UnificacionInformacionView,GenerarInformeView,DescargarInformeView,PuntoDecontrolView
+from .views import EmailTokenView,UnificacionInformacionView,GenerarInformeView,DescargarInformeView,PuntoDecontrolView,BuscarProgramasSimilaresView
 
 urlpatterns = [
 
@@ -9,5 +9,6 @@ urlpatterns = [
    path('generar-informe', GenerarInformeView.as_view(), name='token_by_email'),
    path('descargar-informe', DescargarInformeView.as_view(), name='descargar-informe'),
    path('punto-de-control', PuntoDecontrolView.as_view(), name='punto de control'),
+   path('buscar-programas-similares', BuscarProgramasSimilaresView.as_view(), name='buscar programas similares'),
 
 ]

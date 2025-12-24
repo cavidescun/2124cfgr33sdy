@@ -1,5 +1,4 @@
 from dependency_injector import containers, providers
-
 from app.Acta.infrastructure.repositories import ActaRepositoryImpl
 from app.Acuerdo.infrastructure.repositories import AcuerdoRepositoryImpl
 from app.Biblioteca.infrastructure.repositories import BibliotecaRepositoryImpl
@@ -7,10 +6,11 @@ from app.Core.application.use_cases.crear_documento import CrearDocumento
 from app.Core.application.use_cases.descargar_informe import DescargarInforme
 from app.Core.application.use_cases.obtener_llaves import ObtenerLlave
 from app.Core.application.use_cases.crear_llaves import  CrearLlave
-
+from app.Core.application.use_cases.programas_similares import ProgramasSimilares
 from app.Core.application.use_cases.punto_de_control import PuntoDeControl
 from app.Core.application.use_cases.unificar_informacion import UnificarInformacion
 from app.Core.infrastructure.repositories.repositories import RegistroCalificadoRepositoryImpl
+from app.Core.infrastructure.repositories.repositories_snies import SniesRepositoryImpl
 from app.Core.infrastructure.repositories.repositories_user import UserRepositoryImpl
 from app.ProyeccionFinanciera.infrastructure.repositories import ProyeccionFinancieraRepositoryImpl
 from app.ProyeccionInfracTecnol.infrastructure.repositories import ProyeccionInfracTecnolRepositoryImpl
@@ -34,6 +34,7 @@ class CoreContainer(containers.DeclarativeContainer):
     email_service=providers.Factory(MailServiceImpl)
     template_renderer = providers.Singleton(EmailTemplateRenderer)
     repo_user = providers.Singleton(UserRepositoryImpl)
+    repo_snies = providers.Singleton(SniesRepositoryImpl)
 
 
     obtener_llave = providers.Factory(
@@ -83,3 +84,9 @@ class CoreContainer(containers.DeclarativeContainer):
         tecnologico_repo=tecnologico_repo
     )
 
+
+    
+    programas_similares = providers.Factory(
+        ProgramasSimilares,
+        repo_snies=repo_snies,
+    )

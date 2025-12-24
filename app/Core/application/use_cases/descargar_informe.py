@@ -31,6 +31,14 @@ class DescargarInforme:
         )
 
         return obj["Body"], obj["ContentLength"]
+    
+
+    def obtener_url_objeto(self, llave: str, filename: str):
+        if not self.registro_calificado_repo.exists_by_llave(llave):
+            raise ValueError(f"La llave '{llave}' no existe en la base de datos")
+        key = f"{llave}/{filename}"
+        url = f"https://{self.bucket}.s3.amazonaws.com/{key}"
+        return url
 
     def listar_archivos(
         self,

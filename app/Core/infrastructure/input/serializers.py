@@ -20,3 +20,17 @@ class PuntoControlQuerySerializer(serializers.Serializer):
             "required": "El parámetro llave_maestra es obligatorio"
         }
     )
+
+class BuscarProgramasSimilaresQuerySerializer(serializers.Serializer):
+    campo_amplio = serializers.CharField(required=False, allow_blank=True)
+    campo_especifico = serializers.CharField(required=False, allow_blank=True)
+    campo_detallado = serializers.CharField(required=False, allow_blank=True)
+    area_conocimiento = serializers.CharField(required=False, allow_blank=True)
+    nucleo_basico = serializers.CharField(required=False, allow_blank=True)
+
+    def validate(self, data):
+        if not any(data.values()):
+            raise serializers.ValidationError(
+                "Debe enviar al menos un parámetro de búsqueda."
+            )
+        return data

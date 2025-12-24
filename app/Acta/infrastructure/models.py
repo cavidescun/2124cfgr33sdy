@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import models
-from app.Core.infrastructure.models import RegistroCalificado
+from app.Core.infrastructure.models.models import RegistroCalificado
 
 
 class Acta(models.Model):

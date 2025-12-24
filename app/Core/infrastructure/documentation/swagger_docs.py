@@ -551,3 +551,150 @@ punto_de_control = {
         ),
     }
 }
+
+
+buscar_programas_similares_swagger = {
+    "operation_summary": "Buscar programas académicos similares",
+    "operation_description": (
+        "Permite buscar programas académicos del SNIES con base en múltiples "
+        "criterios de clasificación y devuelve los más similares ordenados por relevancia.\n\n"
+        "**Propósito del endpoint:**\n"
+        "- Apoyar procesos de homologación, análisis o recomendación de programas académicos.\n"
+        "- Retornar programas académicos similares según campos de clasificación CINE/SNIES.\n\n"
+        "**Criterios de búsqueda (opcionales):**\n"
+        "- Campo amplio\n"
+        "- Campo específico\n"
+        "- Campo detallado\n"
+        "- Área de conocimiento\n"
+        "- Núcleo básico del conocimiento\n"
+        "- Nombre del programa\n\n"
+        "**Reglas:**\n"
+        "- Debe enviarse al menos un parámetro.\n"
+        "- Los resultados se ordenan por nivel de similitud.\n\n"
+        "**Tiempo de respuesta:** Medio, depende del volumen de datos."
+    ),
+    "tags": ["Procesos"],
+
+    "manual_parameters": [
+        openapi.Parameter(
+            name="campo_amplio",
+            in_=openapi.IN_QUERY,
+            description="Campo amplio (clasificación CINE 2013)",
+            required=False,
+            type=openapi.TYPE_STRING,
+            example="Administración de Empresas y Derecho"
+        ),
+        openapi.Parameter(
+            name="campo_especifico",
+            in_=openapi.IN_QUERY,
+            description="Campo específico (clasificación CINE 2013)",
+            required=False,
+            type=openapi.TYPE_STRING,
+            example="Educación comercial y administración"
+        ),
+        openapi.Parameter(
+            name="campo_detallado",
+            in_=openapi.IN_QUERY,
+            description="Campo detallado (clasificación CINE 2013)",
+            required=False,
+            type=openapi.TYPE_STRING,
+            example="Contabilidad e impuestos"
+        ),
+        openapi.Parameter(
+            name="area_conocimiento",
+            in_=openapi.IN_QUERY,
+            description="Área de conocimiento",
+            required=False,
+            type=openapi.TYPE_STRING,
+            example="Ciencias Naturales y Exactas"
+        ),
+        openapi.Parameter(
+            name="nucleo_basico",
+            in_=openapi.IN_QUERY,
+            description="Núcleo básico del conocimiento",
+            required=False,
+            type=openapi.TYPE_STRING,
+            example="Administración"
+        ),
+        openapi.Parameter(
+            name="nombre_programa",
+            in_=openapi.IN_QUERY,
+            description="Nombre del programa académico",
+            required=False,
+            type=openapi.TYPE_STRING,
+            example="Administración"
+        ),
+    ],
+
+    "responses": {
+        200: openapi.Response(
+            description="Programas académicos similares encontrados",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    "message": openapi.Schema(type=openapi.TYPE_STRING),
+                    "data": openapi.Schema(
+                        type=openapi.TYPE_ARRAY,
+                        items=openapi.Schema(
+                            type=openapi.TYPE_OBJECT,
+                            properties={
+                                "codigo_snies_del_programa": openapi.Schema(type=openapi.TYPE_NUMBER),
+                                "nombre_del_programa": openapi.Schema(type=openapi.TYPE_STRING),
+                                "nombre_institucion": openapi.Schema(type=openapi.TYPE_STRING),
+                                "nivel_academico": openapi.Schema(type=openapi.TYPE_STRING),
+                                "modalidad": openapi.Schema(type=openapi.TYPE_STRING),
+                                "score": openapi.Schema(
+                                    type=openapi.TYPE_NUMBER,
+                                    description="Nivel de similitud calculado"
+                                ),
+                            }
+                        )
+                    )
+                },
+                example={
+                    "message": "Programas similares obtenidos exitosamente",
+                    "data": [
+                        {
+                            "codigo_snies_del_programa": 118298,
+                            "nombre_del_programa": "Maestría en Contabilidad Internacional",
+                            "nombre_institucion": "Universidad XYZ",
+                            "nivel_academico": "Maestría",
+                            "modalidad": "Presencial",
+                            "score": 15
+                        },
+                        {
+                            "codigo_snies_del_programa": 8145,
+                            "nombre_del_programa": "Contaduría Pública",
+                            "nombre_institucion": "Universidad ABC",
+                            "nivel_academico": "Profesional",
+                            "modalidad": "Presencial",
+                            "score": 10
+                        }
+                    ]
+                }
+            )
+        ),
+
+        400: openapi.Response(
+            description="Parámetros inválidos o ningún criterio enviado",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    "detail": openapi.Schema(type=openapi.TYPE_STRING)
+                },
+                example={"detail": "Debe enviar al menos un parámetro de búsqueda"}
+            )
+        ),
+
+        500: openapi.Response(
+            description="Error interno al buscar programas académicos",
+            schema=openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    "detail": openapi.Schema(type=openapi.TYPE_STRING)
+                },
+                example={"detail": "Error interno al consultar programas académicos"}
+            )
+        ),
+    }
+}

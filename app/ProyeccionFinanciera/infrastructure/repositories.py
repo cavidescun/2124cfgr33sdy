@@ -1,4 +1,4 @@
-from app.Core.infrastructure.models import RegistroCalificado
+from app.Core.infrastructure.models.models import RegistroCalificado
 from app.ProyeccionFinanciera.domain.entities import ProyeccionFinancieraEntity
 from app.ProyeccionFinanciera.infrastructure.models import ProyeccionFinanciera
 from app.ProyeccionFinanciera.domain.repositories import ProyeccionFinancieraRepository

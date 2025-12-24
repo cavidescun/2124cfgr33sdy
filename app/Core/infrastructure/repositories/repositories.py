@@ -1,7 +1,7 @@
 from app.Core.domain.entities import RegistroCalificadoEntity
 from app.Core.domain.repositories.repositories import RegistroCalificadoRepository
 from rest_framework.exceptions import NotFound, ParseError
-from ..models import RegistroCalificado
+from ..models.models import RegistroCalificado
 from typing import Dict, List
 
 

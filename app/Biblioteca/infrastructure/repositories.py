@@ -1,5 +1,5 @@
 
-from app.Core.infrastructure.models import RegistroCalificado
+from app.Core.infrastructure.models.models import RegistroCalificado
 from app.Biblioteca.infrastructure.models import Biblioteca
 from app.Biblioteca.domain.entities import BibliotecaEntity
 from app.Biblioteca.domain.repositories import BibliotecaRepository

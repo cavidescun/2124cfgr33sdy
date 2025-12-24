@@ -1,5 +1,5 @@
 import uuid
-from app.Core.infrastructure.models import RegistroCalificado
+from app.Core.infrastructure.models.models import RegistroCalificado
 from app.ProyeccionInfracTecnol.domain.entities import ProyeccionInfracTecnolEntity
 from app.ProyeccionInfracTecnol.models import ProyeccionInfracTecnol
 from app.ProyeccionInfracTecnol.domain.repositories import ProyeccionInfracTecnolRepository

@@ -35,10 +35,7 @@ urlpatterns = [
         "api/biblioteca/",
         include("app.Biblioteca.infrastructure.urls"),
     ),
-    path(
-        "api/ai-analyzer/",
-        include("app.IAEtiquetas.infrastructure.urls"),
-    ),
+    #path( "api/ai-analyzer/",include("app.IAEtiquetas.infrastructure.urls"),),
     path(
         "api/acuerdo/",
         include("app.Acuerdo.infrastructure.urls"),

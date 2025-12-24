@@ -1,4 +1,4 @@
-from app.Core.infrastructure.models import RegistroCalificado
+from app.Core.infrastructure.models.models import RegistroCalificado
 from app.ProyeccionTecnologica.domain.entities import ProyeccionTecnologicaEntity
 from app.ProyeccionTecnologica.models import ProyeccionTecnologica
 from app.ProyeccionTecnologica.domain.repositories import ProyeccionTecnologicaRepository

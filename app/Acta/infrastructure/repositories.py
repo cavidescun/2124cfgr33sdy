@@ -1,5 +1,5 @@
 
-from app.Core.infrastructure.models import RegistroCalificado
+from app.Core.infrastructure.models.models import RegistroCalificado
 from app.Acta.infrastructure.models import Acta
 from app.Acta.domain.entities import ActaEntity
 from app.Acta.domain.repositories import ActaRepository
