@@ -11,6 +11,7 @@ from app.Core.application.use_cases.punto_de_control import PuntoDeControl
 from app.Core.application.use_cases.unificar_informacion import UnificarInformacion
 from app.Core.infrastructure.repositories.repositories import RegistroCalificadoRepositoryImpl
 from app.Core.infrastructure.repositories.repositories_snies import SniesRepositoryImpl
+from app.Core.infrastructure.repositories.repositories_spadies import SpadiesRepositoryImpl
 from app.Core.infrastructure.repositories.repositories_user import UserRepositoryImpl
 from app.ProyeccionFinanciera.infrastructure.repositories import ProyeccionFinancieraRepositoryImpl
 from app.ProyeccionInfracTecnol.infrastructure.repositories import ProyeccionInfracTecnolRepositoryImpl
@@ -35,6 +36,7 @@ class CoreContainer(containers.DeclarativeContainer):
     template_renderer = providers.Singleton(EmailTemplateRenderer)
     repo_user = providers.Singleton(UserRepositoryImpl)
     repo_snies = providers.Singleton(SniesRepositoryImpl)
+    repo_spadies = providers.Singleton(SpadiesRepositoryImpl)
 
 
     obtener_llave = providers.Factory(
@@ -58,7 +60,9 @@ class CoreContainer(containers.DeclarativeContainer):
         registro_repo=registro_repo,
         email_service=email_service,
         template_renderer=template_renderer,
-        repo_user=repo_user
+        repo_user=repo_user,
+        repo_snies=repo_snies,
+        repo_spadies=repo_spadies
     )
 
 
