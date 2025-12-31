@@ -183,3 +183,71 @@ class ProgramaAcademicoAdmin(admin.ModelAdmin):
     
     def get_queryset(self, request):
         return super().get_queryset(request).using('snies')
+    
+@admin.register(ConsolidadoEducacionSuperior)
+class ConsolidadoEducacionSuperiorAdmin(admin.ModelAdmin):
+    list_display = (
+        'anio',
+        'semestre',
+        'codigo_institucion',
+        'institucion',
+        'codigo_snies_programa',
+        'programa_academico',
+        'nivel_formacion',
+        'modalidad',
+        'total_inscritos',
+        'total_admitidos',
+        'total_matriculados',
+        'total_graduados'
+    )
+    list_filter = (
+        'anio',
+        'semestre',
+        'nivel_formacion',
+        'modalidad',
+        'departamento_programa'
+    )
+    search_fields = (
+        'institucion',
+        'programa_academico',
+        'codigo_snies_programa',
+        'municipio_programa'
+    )
+    ordering = ('-anio', '-semestre', 'institucion')
+    
+    fieldsets = (
+        ('Información Temporal', {
+            'fields': ('anio', 'semestre')
+        }),
+        ('Información Institucional', {
+            'fields': (
+                'codigo_institucion',
+                'institucion'
+            )
+        }),
+        ('Información del Programa', {
+            'fields': (
+                'codigo_snies_programa',
+                'programa_academico',
+                'nivel_formacion',
+                'modalidad'
+            )
+        }),
+        ('Ubicación', {
+            'fields': (
+                'departamento_programa',
+                'municipio_programa'
+            )
+        }),
+        ('Estadísticas de Estudiantes', {
+            'fields': (
+                'total_inscritos',
+                'total_admitidos',
+                'total_matriculados',
+                'total_graduados'
+            )
+        })
+    )
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).using('snies')

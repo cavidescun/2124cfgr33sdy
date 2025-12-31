@@ -24,7 +24,32 @@ class CampoAmplio(models.Model):
     def __str__(self):
         return f"{self.id_amplio} - {self.id_amplio}"
 
+class ConsolidadoEducacionSuperior(models.Model):
 
+    id = models.AutoField(primary_key=True, db_column='id')  # Django necesita un PK    
+    anio = models.IntegerField(null=True, blank=True)
+    semestre = models.IntegerField(null=True, blank=True)
+    codigo_institucion = models.IntegerField(null=True, blank=True)
+    institucion = models.CharField(max_length=255, null=True, blank=True)
+    codigo_snies_programa = models.IntegerField(null=True, blank=True)
+    programa_academico = models.CharField(max_length=255, null=True, blank=True)
+    nivel_formacion = models.CharField(max_length=100, null=True, blank=True)
+    modalidad = models.CharField(max_length=100, null=True, blank=True)
+    departamento_programa = models.CharField(max_length=100, null=True, blank=True)
+    municipio_programa = models.CharField(max_length=100, null=True, blank=True)
+    total_inscritos = models.IntegerField(default=0)
+    total_admitidos = models.IntegerField(default=0)
+    total_matriculados = models.IntegerField(default=0)
+    total_graduados = models.IntegerField(default=0)
+
+    class Meta:
+        managed = False
+        db_table = '"SNIES"."consolidado_educacion_superior_snies"'
+        verbose_name = 'Consolidado Educación Superior'
+        verbose_name_plural = 'Consolidado Educación Superior'
+
+    def __str__(self):
+        return f"{self.institucion} - {self.programa_academico} ({self.anio})"
 class ProgramaAcademico(models.Model):
     """Tabla de programas académicos del SNIES"""
     id = models.AutoField(primary_key=True)
@@ -107,3 +132,5 @@ class ProgramaAcademico(models.Model):
 
     def __str__(self):
         return f"{self.codigo_snies_del_programa} - {self.nombre_del_programa}"
+    
+

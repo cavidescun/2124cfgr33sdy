@@ -121,12 +121,6 @@ class UnificarInformacion:
         return data
 
     def _calcular_etiquetas_malla(self, variables: dict) -> None:
-        """
-        Calcula etiquetas consolidadas desde la malla curricular y las agrega a variables.
-        
-        Args:
-            variables: Diccionario de variables unificadas (se modifica in-place)
-        """
         malla_curricular = variables.get("malla_curricular")
         
         if not malla_curricular or not isinstance(malla_curricular, list):
@@ -506,6 +500,134 @@ class UnificarInformacion:
                     continue
         
         variables["GC_tasadesercion"] = GC_tasadesercion
+
+        variables["materias_primersemestre"] = "I SEMESTRE"
+    
+        materias_primer_semestre = []
+        for materia in malla_curricular:
+            semestre = str(materia.get("TR_Semestre") or "").strip().upper()
+            if semestre == "I SEMESTRE":
+                asignatura = materia.get("TR_Asignatura") or ""
+                if asignatura:
+                    materias_primer_semestre.append(asignatura.strip())
+    
+        variables["listadomaterias_primersemestre"] = materias_primer_semestre
+        variables["materias_segundosemestre"] = "II SEMESTRE"
+    
+        materias_segundo_semestre = []
+        for materia in malla_curricular:
+            semestre = str(materia.get("TR_Semestre") or "").strip().upper()
+            if semestre == "II SEMESTRE":
+                asignatura = materia.get("TR_Asignatura") or ""
+                if asignatura:
+                    materias_segundo_semestre.append(asignatura.strip())
+    
+        variables["listadomaterias_segundosemestre"] = materias_segundo_semestre
+
+        estadisticasestudiantes = []
+
+        if tablareferentes and isinstance(tablareferentes, list):
+            instituciones_programas = []
+            for referente in tablareferentes:
+                if isinstance(referente, dict):
+                    institucion = referente.get("institucion", "").strip()
+                    programa = referente.get("programa", "").strip()
+                    municipio = referente.get("municipio", "").strip()
+            
+                    if institucion and programa:
+                        instituciones_programas.append({
+                        "institucion": institucion,
+                        "programa": programa,
+                        "municipio": municipio
+                        })
+    
+            if instituciones_programas:
+                try:
+                    estadisticasestudiantes = self.repo_snies.obtener_estadisticas_estudiantes(
+                    instituciones_programas
+                )
+                except Exception:
+                    pass
+
+        variables["estadisticasestudiantes"] = estadisticasestudiantes
+
+        if estadisticasestudiantes and isinstance(estadisticasestudiantes, list):
+    
+            inscritos_por_año = {}
+            admitidos_por_año = {}
+            matriculados_por_año = {}
+            graduados_por_año = {}
+
+            for estadistica in estadisticasestudiantes:
+                anio = estadistica.get("anio", "") 
+
+                try:
+                    año_solo = anio.split("-")[0] if "-" in str(anio) else str(anio)
+                except:
+                    año_solo = str(anio)
+        
+                if not año_solo or año_solo == "0":
+                    continue
+
+                inscritos = estadistica.get("inscritos", 0) or 0
+                admitidos = estadistica.get("admitidos", 0) or 0
+                matriculados = estadistica.get("matriculados", 0) or 0
+                graduados = estadistica.get("graduados", 0) or 0
+        
+                if año_solo not in inscritos_por_año:
+                    inscritos_por_año[año_solo] = 0
+                if año_solo not in admitidos_por_año:
+                    admitidos_por_año[año_solo] = 0
+                if año_solo not in matriculados_por_año:
+                    matriculados_por_año[año_solo] = 0
+                if año_solo not in graduados_por_año:
+                    graduados_por_año[año_solo] = 0
+        
+                inscritos_por_año[año_solo] += inscritos
+                admitidos_por_año[año_solo] += admitidos
+                matriculados_por_año[año_solo] += matriculados
+                graduados_por_año[año_solo] += graduados
+    
+            GC_inscritos = []
+            for año in sorted(inscritos_por_año.keys(), reverse=True):
+                GC_inscritos.append({
+                    "años": año,
+                    "inscritos": inscritos_por_año[año]
+                })
+    
+            GC_admitidos = []
+            for año in sorted(admitidos_por_año.keys(), reverse=True):
+                GC_admitidos.append({
+                    "años": año,
+                    "admitidos": admitidos_por_año[año]
+                })
+
+            GC_matriculados = []
+            for año in sorted(matriculados_por_año.keys(), reverse=True):
+                GC_matriculados.append({
+                    "años": año,
+                    "matriculados": matriculados_por_año[año]
+                })
+
+            GC_graduados = []
+            for año in sorted(graduados_por_año.keys(), reverse=True):
+                GC_graduados.append({
+                    "años": año,
+                    "graduados": graduados_por_año[año]
+                })
+    
+
+            variables["GC_inscritos"] = GC_inscritos
+            variables["GC_admitidos"] = GC_admitidos
+            variables["GC_matriculados"] = GC_matriculados
+            variables["GC_graduados"] = GC_graduados
+
+        else:
+            variables["GC_inscritos"] = []
+            variables["GC_admitidos"] = []
+            variables["GC_matriculados"] = []
+            variables["GC_graduados"] = []
+
 
 
 

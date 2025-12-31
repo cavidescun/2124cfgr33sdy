@@ -22,3 +22,5 @@ class SniesRepository(ABC):
             Lista de objetos ProgramaAcademico (uno por cada coincidencia)
         """
         pass
+
+    
